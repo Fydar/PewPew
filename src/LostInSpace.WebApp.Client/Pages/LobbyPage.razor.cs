@@ -18,6 +18,14 @@ namespace LostInSpace.WebApp.Client.Pages
 			ClientService.OnProcedureApplied += OnProcedureApplied;
 		}
 
+		protected override async Task OnAfterRenderAsync(bool firstRender)
+		{
+			if (firstRender)
+			{
+				await JsRuntime.InvokeAsync<object>("PanAndZoom.Start");
+			}
+		}
+
 		public void Dispose()
 		{
 			ClientService.OnProcedureApplied -= OnProcedureApplied;
