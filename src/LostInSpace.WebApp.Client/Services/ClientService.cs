@@ -1,5 +1,5 @@
-﻿using Husky.Game.Shared.Commands;
-using Husky.Game.Shared.Model;
+﻿using Husky.Game.Shared.Model;
+using LostInSpace.WebApp.Shared.Commands;
 using LostInSpace.WebApp.Shared.Procedures;
 using LostInSpace.WebApp.Shared.Services.Network;
 using LostInSpace.WebApp.Shared.View;
@@ -49,12 +49,16 @@ namespace HuskyNet.WebClient.Services
 				};
 				serverConnection.OnReceive += message =>
 				{
-					// Console.WriteLine($"Recived: {Encoding.UTF8.GetString(message)}");
-
-					var procedure = DeserializeProcedure(message.Content);
-					procedure.ApplyToView(clientView);
-
-					OnProcedureApplied?.Invoke(procedure);
+					try
+					{
+						var procedure = DeserializeProcedure(message.Content);
+						procedure.ApplyToView(clientView);
+						OnProcedureApplied?.Invoke(procedure);
+					}
+					catch (Exception exception)
+					{
+						Console.WriteLine(exception);
+					}
 				};
 
 				logger.LogInformation($"Connecting to {target}");
@@ -78,11 +82,11 @@ namespace HuskyNet.WebClient.Services
 			}
 		}
 
-		public Task SendCommandAsync(INetworkChannel channel, ClientCommand command)
+		public Task SendCommandAsync(ClientCommand command)
 		{
 			byte[] data = SerializeCommand(command);
 
-			return channel.SendAsync(data);
+			return serverConnection.SendAsync(data);
 		}
 
 		private byte[] SerializeCommand(ClientCommand command)

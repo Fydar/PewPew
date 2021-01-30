@@ -4,25 +4,35 @@
 
 <h1>Client</h1>
 
-@if (ClientService.View != null)
+@if (ClientService.View?.Lobby?.World?.Ships != null)
 {
+	<div style="overflow: hidden; flex-grow: 1; width: 100%; height: 512px;">
+
+		<div id="zoomcanvasid" style="height: 100%;" @onclick="MapOnClick">
+
+			@foreach (var shipKvp in ClientService.View.Lobby.World.Ships)
+			{
+				var ship = shipKvp.Value;
+
+				<div class="player" style="top: @(ship.Position.y)px; left: @(ship.Position.x)px;">
+
+				</div>
+			}
+
+		</div>
+
+	</div>
+
+	<p>@InputDebug</p>
+
 	<div>
 		<h3>Characters</h3>
 		@if (ClientService.View.Lobby != null)
 		{
-			@foreach (var character in ClientService.View.Lobby.World.Characters)
+			@foreach (var character in ClientService.View.Lobby.World.Ships)
 			{
-				<p><b>@character.Key</b>: @character.Value.PositionX.ToString("0.00"), @character.Value.PositionY.ToString("0.00"), @character.Value.PositionZ.ToString("0.00")</p>
+				<p><b>@character.Key</b>: @character.Value.Position.x.ToString("0.00"), @character.Value.Position.y.ToString("0.00")</p>
 			}
 		}
-	</div>
-}
-else
-{
-	<div class="row">
-		<label>Server URL</label>
-	</div>
-	<div class="row">
-		<button class="btn btn-primary" @onclick="ClickConnectButton">Connect</button>
 	</div>
 }
