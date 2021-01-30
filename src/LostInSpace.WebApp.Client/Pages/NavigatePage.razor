@@ -1,0 +1,28 @@
+﻿@page "/navigate"
+
+@using HuskyNet.WebClient.Services;
+
+<h1>Client</h1>
+
+@if (ClientService.View != null)
+{
+	<div>
+		<h3>Characters</h3>
+		@if (ClientService.View.Lobby != null)
+		{
+			@foreach (var character in ClientService.View.Lobby.World.Characters)
+			{
+				<p><b>@character.Key</b>: @character.Value.PositionX.ToString("0.00"), @character.Value.PositionY.ToString("0.00"), @character.Value.PositionZ.ToString("0.00")</p>
+			}
+		}
+	</div>
+}
+else
+{
+	<div class="row">
+		<label>Server URL</label>
+	</div>
+	<div class="row">
+		<button class="btn btn-primary" @onclick="ClickConnectButton">Connect</button>
+	</div>
+}
