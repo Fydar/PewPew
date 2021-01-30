@@ -79,6 +79,16 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			yield return new ScopedNetworkedViewProcedure(
 				ProcedureScope.Reply,
+				new AssignClientDetailsProcedure()
+				{
+					ClientDetails = new ClientSpecific()
+					{
+						ClientId = connection.Identifier
+					}
+				}
+			);
+			yield return new ScopedNetworkedViewProcedure(
+				ProcedureScope.Reply,
 				new ReplicateViewProcedure()
 				{
 					Lobby = networkedView.Lobby
