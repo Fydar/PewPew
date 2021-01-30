@@ -80,8 +80,9 @@ namespace LostInSpace.WebApp.Server.Services
 
 				byte[] serialized = SerializeProcedure(scopedProcedure.Procedure);
 
-				foreach (var gameClient in Portal.Connections)
+				for (int i = Portal.Connections.Count - 1; i >= 0; i--)
 				{
+					var gameClient = Portal.Connections[i];
 					// If we are forwarding; don't send to the original sender.
 					if (scopedProcedure.Scope == ProcedureScope.Forward
 						&& gameClient == sender)
