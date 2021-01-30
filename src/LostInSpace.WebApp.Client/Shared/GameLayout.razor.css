@@ -1,0 +1,23 @@
+
+
+.page {
+	margin: 0;
+	padding: 0;
+	height: 100vh;
+
+	background-color: #121212;
+
+	display: grid;
+	grid-template-rows: 32px auto;
+	grid-template-areas: 'topbar' 'pagebody';
+}
+
+	.page .navbar {
+		grid-area: topbar;
+		background-color: #1f1f1f;
+	}
+
+	.page .main {
+		grid-area: pagebody;
+
+	}

@@ -1,0 +1,139 @@
+
+
+.page-insert {
+	margin: 0;
+	padding: 4px;
+	display: grid;
+	grid-template-rows: auto 256px;
+	height: 100%;
+	grid-gap: 4px;
+}
+
+	.page-insert .page-gridarea {
+		border-radius: 8px;
+		background-color: #161616;
+		overflow: hidden;
+		position: relative;
+	}
+
+		.page-insert .page-gridarea:focus {
+			outline: 0;
+		}
+
+	.page-insert .page-statusarea {
+		border-radius: 8px;
+		padding: 16px;
+		background-color: #303030;
+		overflow: hidden;
+		display: block;
+	}
+
+.grid {
+	background-image: url('../img/grid4.png');
+	background-size: 256px;
+	height: 2048px;
+	width: 2048px;
+	position: absolute;
+}
+
+.player {
+	position: absolute;
+	width: 72px;
+	height: 72px;
+	transition: transform linear 1s;
+	margin-left: -36px;
+	margin-top: -36px;
+}
+
+	.player .player-ship {
+		width: 100%;
+		height: 100%;
+		background-image: url('../img/ship1.png');
+		background-size: 100% 100%;
+		transition: transform linear 1s;
+	}
+
+	.player label {
+		width: 100%;
+		text-align: center;
+		color: #eee;
+		-webkit-font-smoothing: antialiased;
+	}
+
+.dashboard-row {
+	display: inline-flex;
+}
+
+	.dashboard-row .danger-light,
+	.dashboard-row .warning-light {
+		opacity: 0.3;
+		padding: 12px;
+		border: 2px solid #ff6a00;
+		margin: 16px;
+		font-size: 16px;
+		font-weight: bold;
+	}
+
+@keyframes flashing-button {
+	0% {
+		opacity: 1.0;
+	}
+
+	70% {
+		opacity: 0.3;
+	}
+}
+
+.dashboard-row .danger-light.active,
+.dashboard-row .warning-light.active {
+	-webkit-animation: flashing-button 900ms infinite;
+	-moz-animation: flashing-button 900ms infinite;
+	-o-animation: flashing-button 900ms infinite;
+	animation: flashing-button 900ms infinite;
+}
+
+.dashboard-row .danger-light {
+	border: 4px solid #ff0000;
+	color: #ff0000;
+}
+
+.dashboard-row .warning-light {
+	border: 4px solid #ff6a00;
+	color: #ff6a00;
+}
+
+.game-btn.game-btn-navigate {
+	position: absolute;
+	right: 16px;
+	bottom: 16px;
+	width: 128px;
+	height: 128px;
+	border-radius: 50%;
+	border: 4px solid #eee;
+	background-color: #424242;
+	text-align: center;
+	text-anchor: middle;
+	font-size: 24px;
+	font-weight: bold;
+	cursor: pointer;
+	align-items: center;
+	display: flex;
+	justify-content: center;
+}
+
+.notice {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 16px;
+	height: 128px;
+	text-align: center;
+	text-anchor: middle;
+	font-size: 32px;
+	font-weight: bold;
+	cursor: pointer;
+	align-items: center;
+	display: flex;
+	justify-content: center;
+	opacity: 0.3;
+}
