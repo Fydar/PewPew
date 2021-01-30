@@ -1,11 +1,12 @@
-﻿using Husky.Game.Shared;
-using Husky.Game.Shared.Commands;
-using Husky.Game.Shared.Model;
+﻿using Husky.Game.Shared.Model;
+using LostInSpace.WebApp.Shared.Commands;
 using LostInSpace.WebApp.Shared.Procedures;
 using LostInSpace.WebApp.Shared.View;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace LostInSpace.WebApp.Server.Services
 {
@@ -43,13 +44,40 @@ namespace LostInSpace.WebApp.Server.Services
 				var procedures = CommandProcessor.HandleRecieveCommand(connection, command);
 				ApplyViewProcedures(procedures, connection);
 			};
+
+			_ = GameTickerWorker();
+		}
+
+		private async Task GameTickerWorker()
+		{
+			while (true)
+			{
+				await Task.Delay(1000);
+
+				var procedures = CommandProcessor.HandleGameTick();
+				ApplyViewProcedures(procedures, null);
+			}
 		}
 
 		private void ApplyViewProcedures(IEnumerable<ScopedNetworkedViewProcedure> scopedProcedures, GameClientConnection sender = null)
 		{
 			foreach (var scopedProcedure in scopedProcedures)
 			{
-				scopedProcedure.Procedure.ApplyToView(View);
+				if (sender == null && scopedProcedure.Scope == ProcedureScope.Reply)
+				{
+					throw new InvalidOperationException("Cannot reply when procedure is being applied from game tick");
+				}
+
+				try
+				{
+					scopedProcedure.Procedure.ApplyToView(View);
+				}
+				catch(Exception exception)
+				{
+					Console.WriteLine(exception);
+					continue;
+				}
+
 				byte[] serialized = SerializeProcedure(scopedProcedure.Procedure);
 
 				foreach (var gameClient in Portal.Connections)
@@ -75,27 +103,23 @@ namespace LostInSpace.WebApp.Server.Services
 
 		private ClientCommand DeserializeClientCommand(Stream data)
 		{
-			using (var sr = new StreamReader(data))
-			using (var jr = new JsonTextReader(sr))
-			{
-				var deserialized = serializer.Deserialize<PackagedModel<ClientCommand>>(jr);
-				return deserialized.Deserialize();
-			}
+			using var sr = new StreamReader(data);
+			using var jr = new JsonTextReader(sr);
+			var deserialized = serializer.Deserialize<PackagedModel<ClientCommand>>(jr);
+			return deserialized.Deserialize();
 		}
 
 		private byte[] SerializeProcedure(NetworkedViewProcedure viewProcedure)
 		{
 			var serialized = PackagedModel<NetworkedViewProcedure>.Serialize(viewProcedure);
 
-			using (var ms = new MemoryStream())
+			using var ms = new MemoryStream();
+			using (var sr = new StreamWriter(ms))
+			using (var jw = new JsonTextWriter(sr))
 			{
-				using (var sr = new StreamWriter(ms))
-				using (var jw = new JsonTextWriter(sr))
-				{
-					serializer.Serialize(jw, serialized);
-				}
-				return ms.ToArray();
+				serializer.Serialize(jw, serialized);
 			}
+			return ms.ToArray();
 		}
 	}
 }
