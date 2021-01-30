@@ -1,39 +1,47 @@
 ﻿@page "/navigate"
 
+@layout LostInSpace.WebApp.Client.Shared.GameLayout;
+
 @using HuskyNet.WebClient.Services;
 
-<h1>Client</h1>
+<div class="page-insert">
 
-@if (ClientService.View?.Lobby?.World?.Ships != null)
-{
-	<div  style="overflow: hidden; flex-grow: 1; width: 100%; height: 512px;">
-
+	<div class="page-gridarea">
 		<div class="grid" id="zoomcanvasid" @onclick="MapOnClick">
 
-			@foreach (var shipKvp in ClientService.View.Lobby.World.Ships)
+			@if (ClientService.View?.Lobby?.World?.Ships != null)
 			{
-				var ship = shipKvp.Value;
+				@foreach (var shipKvp in ClientService.View.Lobby.World.Ships)
+				{
+					var ship = shipKvp.Value;
 
-				<div class="player" style="top: 0; left: 0; transform: translate(@(ship.Position.x)px, @(ship.Position.y)px)">
+					<div class="player" style="top: 0; left: 0; transform: translate(@(ship.Position.x)px, @(ship.Position.y)px)">
 
-					<div class="player-ship" style="transform: rotate(@(ship.Rotation + 180.0f)deg);">
+						<div class="player-ship" style="transform: rotate(@(ship.Rotation + 180.0f)deg);">
+
+						</div>
+
+						<label>Name</label>
 
 					</div>
-
-					<label>Name</label>
-
-				</div>
+				}
 			}
-
 		</div>
 
+		<div class="game-btn game-btn-navigate">Goto</div>
 	</div>
 
-	<p>@InputDebug</p>
+	<div class="page-statusarea">
+		<h3>Dashboard</h3>
 
-	<div>
-		<h3>Characters</h3>
-		@if (ClientService.View.Lobby != null)
+		<div class="dashboard-row">
+			<div class="warning-light active">Low Fuel</div>
+			<div class="warning-light">Low Supplies</div>
+			<div class="danger-light">Engine Fire!</div>
+			<div class="danger-light active">Out of Fuel</div>
+		</div>
+
+		@if (ClientService.View?.Lobby != null)
 		{
 			@foreach (var character in ClientService.View.Lobby.World.Ships)
 			{
@@ -41,4 +49,4 @@
 			}
 		}
 	</div>
-}
+</div>

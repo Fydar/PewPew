@@ -1,4 +1,5 @@
-﻿using HuskyNet.WebClient.Services;
+﻿using Husky.Game.Shared.Model;
+using HuskyNet.WebClient.Services;
 using LostInSpace.WebApp.Shared.Commands;
 using LostInSpace.WebApp.Shared.Procedures;
 using LostInSpace.WebApp.Shared.View;
@@ -16,7 +17,16 @@ namespace LostInSpace.WebApp.Client.Pages
 		[Inject] protected NavigationManager NavigationManager { get; set; }
 		[Inject] protected IJSRuntime JsRuntime { get; set; }
 
+		public LocalId? CurrentlySelected { get; set; }
+
 		private string InputDebug { get; set; }
+
+		public enum NavigateInputMode
+		{
+			None,
+			SetDestination,
+
+		}
 
 		protected override Task OnInitializedAsync()
 		{
