@@ -38,7 +38,7 @@ namespace LostInSpace.WebApp.Client.Pages
 
 			_ = ClientService.SendCommandAsync(new SetDestinationPositionCommand()
 			{
-				Position = new Vector2((float)mouseEventArgs.ClientX, (float)mouseEventArgs.ClientY)
+				Position = new Vector2((float)mouseEventArgs.OffsetX, (float)mouseEventArgs.OffsetY)
 			});
 		}
 
