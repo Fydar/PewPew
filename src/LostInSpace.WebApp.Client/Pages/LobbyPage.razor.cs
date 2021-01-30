@@ -1,6 +1,9 @@
 ﻿using HuskyNet.WebClient.Services;
+using LostInSpace.WebApp.Shared.Commands;
 using LostInSpace.WebApp.Shared.Procedures;
+using LostInSpace.WebApp.Shared.View;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
@@ -13,17 +16,19 @@ namespace LostInSpace.WebApp.Client.Pages
 		[Inject] protected NavigationManager NavigationManager { get; set; }
 		[Inject] protected IJSRuntime JsRuntime { get; set; }
 
-		protected override async Task OnInitializedAsync()
+		protected override Task OnInitializedAsync()
 		{
 			ClientService.OnProcedureApplied += OnProcedureApplied;
+
+			return Task.CompletedTask;
 		}
 
-		protected override async Task OnAfterRenderAsync(bool firstRender)
+		public void LaunchGameButton(MouseEventArgs mouseEventArgs)
 		{
-			if (firstRender)
+			_ = ClientService.SendCommandAsync(new SetDestinationPositionCommand()
 			{
-				await JsRuntime.InvokeAsync<object>("PanAndZoom.Start");
-			}
+				Position = new Vector2((float)mouseEventArgs.ClientX, (float)mouseEventArgs.ClientY)
+			});
 		}
 
 		public void Dispose()
