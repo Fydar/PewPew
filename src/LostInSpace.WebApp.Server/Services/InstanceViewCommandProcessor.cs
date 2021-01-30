@@ -58,7 +58,8 @@ namespace LostInSpace.WebApp.Server.Services
 				if (shouldMove)
 				{
 					var direction = targetPosition - ship.Position;
-					float targetAngle = Vector2.Angle(Vector2.up, direction.Normalized);
+
+					float targetAngle = Vector2.SignedAngle(Vector2.up, direction.Normalized);
 
 					var newPosition = Vector2.MoveTowards(ship.Position, targetPosition, ship.MovementSpeed);
 
