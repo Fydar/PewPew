@@ -15,7 +15,6 @@ namespace LostInSpace.WebApp.Shared.View
 		public LobbyView()
 		{
 			Chat = new LobbyChat();
-			World = new GameplayWorld();
 			Players = new Dictionary<LocalId, LobbyPublicPlayerProfile>();
 		}
 	}

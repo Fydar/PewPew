@@ -13,6 +13,5 @@
   <ItemGroup>
     <ProjectReference Include="..\LostInSpace.WebApp.Shared\LostInSpace.WebApp.Shared.csproj" />
   </ItemGroup>
-  </ItemGroup>
 
 </Project>
