@@ -9,6 +9,28 @@
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="LostInSpace.WebApp.Client.styles.css" rel="stylesheet" />
+
+    <script src='https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js'></script>
+    <script>
+        window.PanAndZoom =
+        {
+            Start: function (element) {
+
+				var actualElement = document.getElementById('zoomcanvasid');
+
+				// and forward it it to panzoom.
+                panzoom(actualElement,
+				    {
+					    zoomSpeed: 0.125, // 6.5% per mouse wheel event
+                        maxZoom: 3,
+					    minZoom: 1,
+                        bounds: true,
+                        boundsPadding: 1,
+                    }
+                );
+            }
+        };
+    </script>
 </head>
 
 <body>

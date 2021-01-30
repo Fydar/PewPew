@@ -48,3 +48,12 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+
+.player {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+
+  background-color: #333;
+}
