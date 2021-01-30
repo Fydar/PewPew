@@ -25,9 +25,8 @@ namespace LostInSpace.WebApp.Client.Pages
 
 		public void LaunchGameButton(MouseEventArgs mouseEventArgs)
 		{
-			_ = ClientService.SendCommandAsync(new SetDestinationPositionCommand()
+			_ = ClientService.SendCommandAsync(new LaunchGameCommand()
 			{
-				Position = new Vector2((float)mouseEventArgs.ClientX, (float)mouseEventArgs.ClientY)
 			});
 		}
 
