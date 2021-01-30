@@ -11,6 +11,11 @@
 		{
 			@foreach (var player in ClientService.View.Lobby.Players)
 			{
+				@if (player.Key == ClientService.View.Client.ClientId)
+				{
+					<p><sub>this is you!</sub></p>
+				}
+
 				<p>@player.Value.DisplayName (@player.Key)</p>
 			}
 		}
