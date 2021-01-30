@@ -5,7 +5,8 @@
 }
 
 .main {
-    flex: 1;
+  flex: 1;
+  /*background-color: #0e0e0e;*/
 }
 
 .sidebar {

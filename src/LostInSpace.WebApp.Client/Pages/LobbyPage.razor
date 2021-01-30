@@ -1,0 +1,26 @@
+﻿@page "/"
+@page "/lobby"
+
+@using HuskyNet.WebClient.Services;
+
+@if (ClientService.View != null)
+{
+	<div>
+		<h3>Players</h3>
+		@if (ClientService.View.Lobby != null)
+		{
+			@foreach (var player in ClientService.View.Lobby.Players)
+			{
+				<p>@player.Value.DisplayName (@player.Key)</p>
+			}
+		}
+	</div>
+}
+else
+{
+	var rand = new Random();
+
+	<h1>Connecting...</h1>
+}
+
+
