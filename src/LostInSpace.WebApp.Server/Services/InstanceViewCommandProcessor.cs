@@ -1,6 +1,7 @@
 ﻿using LostInSpace.WebApp.Shared.Commands;
 using LostInSpace.WebApp.Shared.Procedures;
 using LostInSpace.WebApp.Shared.View;
+using System;
 using System.Collections.Generic;
 
 namespace LostInSpace.WebApp.Server.Services
@@ -8,10 +9,13 @@ namespace LostInSpace.WebApp.Server.Services
 	public class InstanceViewCommandProcessor
 	{
 		private readonly NetworkedView networkedView;
+		private readonly Random random;
 
 		public InstanceViewCommandProcessor(NetworkedView clientView)
 		{
 			networkedView = clientView;
+
+			random = new Random();
 		}
 
 		public IEnumerable<ScopedNetworkedViewProcedure> HandleGameTick()
@@ -105,6 +109,35 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			switch (clientCommand)
 			{
+				case LaunchGameCommand command:
+				{
+					var world = new GameplayWorld();
+
+					foreach (var player in networkedView.Lobby.Players)
+					{
+						var ship = new GameplayShip();
+
+						ship.Position = new Vector2(
+							random.Next(0, 512),
+							random.Next(0, 512)
+						);
+
+						ship.SupplyUnits = random.Next(256, 512);
+						ship.FuelUnits = random.Next(256, 512);
+
+						world.Ships.Add(player.Key, ship);
+					}
+
+					yield return new ScopedNetworkedViewProcedure(
+						ProcedureScope.Broadcast,
+						new GameStartProcedure()
+						{
+							World = world
+						}
+					);
+					break;
+				}
+
 				case UpdateDisplayNameCommand command:
 				{
 					yield return new ScopedNetworkedViewProcedure(
