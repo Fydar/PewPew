@@ -1,3 +1,4 @@
+using HuskyNet.Instance.Server.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,9 @@ namespace LostInSpace.WebApp.Server
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddSingleton<InstanceManagerService>();
+
+			services.AddControllers();
 
 			services.AddControllersWithViews();
 			services.AddRazorPages();
@@ -41,10 +45,16 @@ namespace LostInSpace.WebApp.Server
 
 			app.UseRouting();
 
+			app.UseWebSockets();
+
 			app.UseEndpoints(endpoints =>
 			{
+				//endpoints.MapControllers();
+				endpoints.MapControllerRoute(
+				   name: "default",
+				   pattern: "{controller=Home}/{action=Index}/{id?}");
+
 				endpoints.MapRazorPages();
-				endpoints.MapControllers();
 				endpoints.MapFallbackToFile("index.html");
 			});
 		}
