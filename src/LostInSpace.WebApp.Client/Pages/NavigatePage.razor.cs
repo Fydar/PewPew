@@ -17,12 +17,16 @@ namespace LostInSpace.WebApp.Client.Pages
 		[Inject] protected NavigationManager NavigationManager { get; set; }
 		[Inject] protected IJSRuntime JsRuntime { get; set; }
 
-
 		public NavigateInputMode InputMode
 		{
 			get
 			{
-				if (ClientService.View?.Lobby?.World.Ships.ContainsKey(ClientService.View.Client.ClientId) ?? false)
+				if (ClientService.View?.Client == null)
+				{
+					return NavigateInputMode.None;
+				}
+
+				if (ClientService.View?.Lobby?.World?.Ships.ContainsKey(ClientService.View.Client.ClientId) ?? false)
 				{
 					return NavigateInputMode.SetDestination;
 				}
