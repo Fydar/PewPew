@@ -57,15 +57,20 @@
 				{
 					var ship = shipKvp.Value;
 
-					var owner = ClientService.View.Lobby.Players[shipKvp.Key];
-
 					<div class="player" style="top: 0; left: 0; transform: translate(@(ship.Position.x)px, @(ship.Position.y)px)">
 
 						<div class="player-ship" style="transform: rotate(@(ship.Rotation + 180.0f)deg);">
 
 						</div>
 
-						<label>@owner.DisplayName</label>
+						@if (ClientService.View.Lobby.Players.TryGetValue(shipKvp.Key, out var owner))
+						{
+							<label>@owner.DisplayName</label>
+						}
+						else
+						{
+							<label>Disconnected...</label>
+						}
 						<progress value="@((int)(ship.HealthPercentage * 100))" max="100"></progress>
 
 					</div>
