@@ -16,10 +16,17 @@ namespace LostInSpace.WebApp.Client.Pages
 		[Inject] protected NavigationManager NavigationManager { get; set; }
 		[Inject] protected IJSRuntime JsRuntime { get; set; }
 
+		string nameCache = null;
+
 		public string YourName
 		{
 			get
 			{
+				if (nameCache != null)
+				{
+					return nameCache;
+				}
+
 				if (ClientService.View?.Client == null
 					|| ClientService.View?.Lobby == null)
 				{
@@ -31,6 +38,7 @@ namespace LostInSpace.WebApp.Client.Pages
 			}
 			set
 			{
+				nameCache = value;
 				UpdateDisplayName(value);
 			}
 		}
