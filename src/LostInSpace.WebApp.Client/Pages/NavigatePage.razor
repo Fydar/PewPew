@@ -78,23 +78,4 @@
 			<div class="game-btn game-btn-navigate" @onclick="GotoButtonClick">Goto</div>
 		}
 	</div>
-
-	<div class="page-statusarea">
-		<h3>Dashboard</h3>
-
-		<div class="dashboard-row">
-			<div class="warning-light active">Low Fuel</div>
-			<div class="warning-light">Low Supplies</div>
-			<div class="danger-light">Engine Fire!</div>
-			<div class="danger-light active">Out of Fuel</div>
-		</div>
-
-		@if (ClientService.View?.Lobby != null)
-		{
-			@foreach (var character in ClientService.View.Lobby.World.Ships)
-			{
-				<p><b>@character.Key</b>: @character.Value.Position.x.ToString("0.00"), @character.Value.Position.y.ToString("0.00")</p>
-			}
-		}
-	</div>
 </div>

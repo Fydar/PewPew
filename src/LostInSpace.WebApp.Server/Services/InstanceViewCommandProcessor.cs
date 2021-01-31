@@ -4,9 +4,38 @@ using LostInSpace.WebApp.Shared.Procedures;
 using LostInSpace.WebApp.Shared.View;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LostInSpace.WebApp.Server.Services
 {
+	public static class RandomName
+	{
+		private static readonly Random random = new Random();
+
+		private static readonly string[] prefix = new string[]
+		{
+			"Smart",
+			"Quick",
+			"Rabid",
+			"Ace",
+			"Furry",
+		};
+
+		private static readonly string[] animals = new string[]
+		{
+			"Fox",
+			"Owl",
+			"Seal",
+			"Penguin",
+			"Chicken"
+		};
+
+		public static string Get()
+		{
+			return $"{prefix[random.Next(0, prefix.Length)]} {animals[random.Next(0, animals.Length)]}";
+		}
+	}
+
 	public class InstanceViewCommandProcessor
 	{
 		private readonly NetworkedView networkedView;
@@ -149,7 +178,7 @@ namespace LostInSpace.WebApp.Server.Services
 
 						var otherShip = otherShipKvp.Value;
 
-						if (ship.IsInCommsRange(otherShip))
+						if (ship.IsInWeaponsRange(otherShip))
 						{
 							var offsetDirection = new Vector2(
 								((float)random.NextDouble() - 0.5f) * 2.0f,
@@ -223,12 +252,31 @@ namespace LostInSpace.WebApp.Server.Services
 					Lobby = networkedView.Lobby
 				}
 			);
+
+			int playerTeam;
+
+			int teamACount = networkedView.Lobby.Players.Count(p => p.Value.TeamId == 0);
+			int teamBCount = networkedView.Lobby.Players.Count(p => p.Value.TeamId == 1);
+
+			if (teamACount < teamBCount)
+			{
+				playerTeam = 0;
+			}
+			else
+			{
+				playerTeam = 1;
+			}
+
 			yield return new ScopedNetworkedViewProcedure(
 				ProcedureScope.Broadcast,
 				new LobbyPlayerJoinProcedure()
 				{
 					Identifier = connection.Identifier,
-					DisplayName = connection.Identifier.ToString()
+					Profile = new LobbyPublicPlayerProfile()
+					{
+						DisplayName = RandomName.Get(),
+						TeamId = playerTeam
+					}
 				}
 			);
 		}
@@ -278,7 +326,20 @@ namespace LostInSpace.WebApp.Server.Services
 					break;
 				}
 
-				case UpdateDisplayNameCommand command:
+				case LobbyUpdateTeamCommand command:
+				{
+					yield return new ScopedNetworkedViewProcedure(
+						ProcedureScope.Broadcast,
+						new LobbyPlayerUpdateTeamProcedure()
+						{
+							Identifier = connection.Identifier,
+							TeamId = command.NewTeamId
+						}
+					);
+					break;
+				}
+
+				case LobbyUpdateDisplayNameCommand command:
 				{
 					yield return new ScopedNetworkedViewProcedure(
 						ProcedureScope.Broadcast,

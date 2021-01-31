@@ -1,17 +1,23 @@
 
 
+
+body {
+	color: #eee;
+}
+
+
 .page-insert {
 	margin: 0;
 	padding: 4px;
 	display: grid;
-	grid-template-rows: auto 128px;
+	grid-template-rows: auto;
 	height: 100%;
 	grid-gap: 4px;
 }
 
 	.page-insert .page-gridarea {
 		border-radius: 8px;
-		background-color: #161616;
+		background-color: #101010;
 		overflow: hidden;
 		position: relative;
 	}

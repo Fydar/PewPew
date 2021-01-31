@@ -1,6 +1,6 @@
 ﻿namespace LostInSpace.WebApp.Shared.Commands
 {
-	public class UpdateDisplayNameCommand : ClientCommand
+	public class LobbyUpdateDisplayNameCommand : ClientCommand
 	{
 		public string DisplayName { get; set; }
 	}

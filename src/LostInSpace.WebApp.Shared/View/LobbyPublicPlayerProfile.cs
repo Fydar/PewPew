@@ -7,8 +7,7 @@ namespace LostInSpace.WebApp.Shared.View
 	/// </summary>
 	public class LobbyPublicPlayerProfile
 	{
-		public LocalId Identifier { get; set; }
-
+		public int TeamId { get; set; }
 		public string DisplayName { get; set; }
 	}
 }
