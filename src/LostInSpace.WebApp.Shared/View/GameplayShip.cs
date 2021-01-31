@@ -20,6 +20,7 @@ namespace LostInSpace.WebApp.Shared.View
 		public int HealthMax { get; set; } = 100;
 		public float MovementSpeed { get; set; } = 8.0f;
 		public float Radius { get; set; } = 10.0f;
+		public float RotationSpeed { get; set; } = 10.0f;
 
 		public bool HasBeams { get; set; } = true;
 		public float BeamsRange { get; set; } = 300;

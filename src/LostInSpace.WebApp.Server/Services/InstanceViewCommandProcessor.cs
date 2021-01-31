@@ -137,7 +137,17 @@ namespace LostInSpace.WebApp.Server.Services
 				{
 					var direction = targetPosition - ship.Position;
 
-					float targetAngle = Vector2.SignedAngle(Vector2.up, direction.Normalized);
+					float targetAngle;
+					if (direction.Magnitude > 4.0f)
+					{
+						targetAngle = Vector2.SignedAngle(Vector2.up, direction.Normalized);
+					}
+					else
+					{
+						targetAngle = ship.Rotation;
+					}
+
+					float currentAngle = Mathf.MoveTowardsAngle(ship.Rotation, targetAngle, ship.RotationSpeed);
 
 					var newPosition = Vector2.MoveTowards(ship.Position, targetPosition, ship.MovementSpeed);
 
@@ -147,7 +157,7 @@ namespace LostInSpace.WebApp.Server.Services
 						{
 							Identifier = shipKvp.Key,
 							Position = newPosition,
-							Rotation = targetAngle
+							Rotation = currentAngle
 						}
 					);
 				}
