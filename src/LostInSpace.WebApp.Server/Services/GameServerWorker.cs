@@ -61,7 +61,7 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			while (true)
 			{
-				await Task.Delay(1000 / 10);
+				await Task.Delay(1000 / 4);
 
 				viewMutex.WaitOne();
 				var procedures = CommandProcessor.HandleGameTick().ToList();
