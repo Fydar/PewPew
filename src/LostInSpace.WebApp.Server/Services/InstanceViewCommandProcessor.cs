@@ -44,13 +44,6 @@ namespace LostInSpace.WebApp.Server.Services
 				yield break;
 			}
 
-			yield return new ScopedNetworkedViewProcedure(
-				ProcedureScope.Broadcast,
-				new GameTickProcedure()
-				{
-				}
-			);
-
 			foreach (var projectileKvp in world.Projectiles)
 			{
 				var projectile = projectileKvp.Value;
@@ -229,6 +222,13 @@ namespace LostInSpace.WebApp.Server.Services
 					}
 				}
 			}
+
+			yield return new ScopedNetworkedViewProcedure(
+				ProcedureScope.Broadcast,
+				new GameTickProcedure()
+				{
+				}
+			);
 		}
 
 		public IEnumerable<ScopedNetworkedViewProcedure> HandlePlayerConnect(GameClientConnection connection)

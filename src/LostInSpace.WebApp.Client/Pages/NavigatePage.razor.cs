@@ -113,7 +113,10 @@ namespace LostInSpace.WebApp.Client.Pages
 
 		public void OnProcedureApplied(NetworkedViewProcedure networkedViewProcedure)
 		{
-			_ = InvokeAsync(StateHasChanged);
+			if (networkedViewProcedure is GameTickProcedure)
+			{
+				_ = InvokeAsync(StateHasChanged);
+			}
 
 			if (ClientService.View?.Lobby?.World == null)
 			{
