@@ -58,8 +58,7 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 
 			try
 			{
-				var task = clientWebSocket.ConnectAsync(uri, cancellationToken);
-				await task.ConfigureAwait(true);
+				await clientWebSocket.ConnectAsync(uri, cancellationToken);
 				OnConnected?.Invoke();
 			}
 			catch (Exception exception)
@@ -79,11 +78,10 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 		{
 			var trace = Logging.Start("Closing connection");
 
-			var task = WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Scheduled Closure", cancellationToken);
 
 			try
 			{
-				await task.ConfigureAwait(true);
+				await WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Scheduled Closure", cancellationToken);
 			}
 			catch (Exception exception)
 			{
@@ -102,8 +100,7 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 
 			try
 			{
-				var task = WebSocket.SendAsync(messageBytes, WebSocketMessageType.Binary, true, cancellationToken);
-				await task.ConfigureAwait(true);
+				await WebSocket.SendAsync(messageBytes, WebSocketMessageType.Binary, true, cancellationToken);
 			}
 			catch (Exception exception)
 			{

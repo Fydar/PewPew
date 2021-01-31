@@ -58,7 +58,7 @@
 								break;
 						}
 
-						<polyline style="stroke: @colour; stroke-width: @beam.DamagePerTick;" points="@((int)beam.StartPosition.x),@((int)beam.StartPosition.y) @((int)beam.EndPosition.x),@((int)beam.EndPosition.y)"></polyline>
+						<polyline style="stroke: @colour; stroke-width: @beam.Thickness;" points="@((int)beam.StartPosition.x),@((int)beam.StartPosition.y) @((int)beam.EndPosition.x),@((int)beam.EndPosition.y)"></polyline>
 					}
 				</svg>
 			}
@@ -69,27 +69,38 @@
 				{
 					var ship = shipKvp.Value;
 
-					<div class="player @ship.ShipType" style="top: 0; left: 0; transform: translate(@(ship.Position.x)px, @(ship.Position.y)px)">
+					LostInSpace.WebApp.Shared.View.LobbyPublicPlayerProfile owner = null;
+
+					ClientService.View.Lobby?.Players?.TryGetValue(shipKvp.Key, out owner);
+
+					<div class="player @ship.ShipType team-@(owner?.TeamId ?? -1) @(ship.IsDestroyed ? "destroyed" : "")" style="top: 0; left: 0; transform: translate(@(ship.Position.x)px, @(ship.Position.y)px)">
 
 						<div class="player-ship" style="transform: rotate(@(ship.Rotation + 180.0f)deg);">
 
 						</div>
 
-						@if (ClientService.View.Lobby.Players.TryGetValue(shipKvp.Key, out var owner))
+						@if (!ship.IsDestroyed)
 						{
-							<label>@owner.DisplayName</label>
-						}
-						else
-						{
-							<label>Disconnected...</label>
-						}
-						<progress value="@((int)(ship.HealthPercentage * 100))" max="100"></progress>
+							<div class="bar">
+								<div class="fill" style="width: @((int)(ship.HealthPercentage * 100))%" >
 
-						@if (shipKvp.Key == ClientService.View?.Client?.ClientId)
-						{
-							float range = ship.BeamsRange + ship.Radius;
+								</div>
+							</div>
+							@if (owner != null)
+							{
+								<label>@owner.DisplayName</label>
+							}
+							else
+							{
+								<label>Disconnected...</label>
+							}
 
-							<div class="range-indicator" style="width: @(range * 2)px; height: @(range * 2)px;"></div>
+							@if (shipKvp.Key == ClientService.View?.Client?.ClientId)
+							{
+								float range = ship.BeamsRange + ship.Radius;
+
+								<div class="range-indicator" style="width: @(range * 2)px; height: @(range * 2)px;"></div>
+							}
 						}
 
 					</div>
@@ -101,11 +112,11 @@
 			LostInSpace.WebApp.Shared.View.GameplayShip playerShip = null;
 		}
 		@if (ClientService.View?.Lobby?.World?.Ships.TryGetValue(ClientService.View.Client.ClientId, out playerShip) ?? false
-			&& playerShip.HasBarrage)
+		  && playerShip.HasBarrage)
 		{
 			bool canBarrage = false;
 			@if (InputMode == NavigateInputMode.SetDestination
-			   && playerShip.CanBarrage)
+			 && playerShip.CanBarrage)
 			{
 			}
 

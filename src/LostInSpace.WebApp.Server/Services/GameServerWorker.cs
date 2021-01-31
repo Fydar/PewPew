@@ -34,14 +34,14 @@ namespace LostInSpace.WebApp.Server.Services
 			Portal.OnConnect += connection =>
 			{
 				viewMutex.WaitOne();
-				var procedures = CommandProcessor.HandlePlayerConnect(connection);
+				var procedures = CommandProcessor.HandlePlayerConnect(connection).ToList();
 				ApplyViewProcedures(procedures, connection);
 				viewMutex.ReleaseMutex();
 			};
 			Portal.OnDisconnect += connection =>
 			{
 				viewMutex.WaitOne();
-				var procedures = CommandProcessor.HandlePlayerDisconnect(connection);
+				var procedures = CommandProcessor.HandlePlayerDisconnect(connection).ToList();
 				ApplyViewProcedures(procedures, connection);
 				viewMutex.ReleaseMutex();
 			};
@@ -49,7 +49,7 @@ namespace LostInSpace.WebApp.Server.Services
 			{
 				viewMutex.WaitOne();
 				var command = DeserializeClientCommand(message.Content);
-				var procedures = CommandProcessor.HandleRecieveCommand(connection, command);
+				var procedures = CommandProcessor.HandleRecieveCommand(connection, command).ToList();
 				ApplyViewProcedures(procedures, connection);
 				viewMutex.ReleaseMutex();
 			};
@@ -70,10 +70,11 @@ namespace LostInSpace.WebApp.Server.Services
 			}
 		}
 
-		private void ApplyViewProcedures(IEnumerable<ScopedNetworkedViewProcedure> scopedProcedures, GameClientConnection sender = null)
+		private void ApplyViewProcedures(IReadOnlyList<ScopedNetworkedViewProcedure> scopedProcedures, GameClientConnection sender = null)
 		{
-			foreach (var scopedProcedure in scopedProcedures)
+			for (int p = 0; p < scopedProcedures.Count; p++)
 			{
+				var scopedProcedure = scopedProcedures[p];
 				if (sender == null && scopedProcedure.Scope == ProcedureScope.Reply)
 				{
 					throw new InvalidOperationException("Cannot reply when procedure is being applied from game tick");
@@ -91,9 +92,9 @@ namespace LostInSpace.WebApp.Server.Services
 
 				byte[] serialized = SerializeProcedure(scopedProcedure.Procedure);
 
-				for (int i = Portal.Connections.Count - 1; i >= 0; i--)
+				for (int c = Portal.Connections.Count - 1; c >= 0; c--)
 				{
-					var gameClient = Portal.Connections[i];
+					var gameClient = Portal.Connections[c];
 					// If we are forwarding; don't send to the original sender.
 					if (scopedProcedure.Scope == ProcedureScope.Forward
 						&& gameClient == sender)
