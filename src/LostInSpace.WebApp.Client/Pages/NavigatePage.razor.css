@@ -73,16 +73,6 @@ body {
 		transition: transform linear 0.4s;
 	}
 
-	.player.scout {
-		width: 72px;
-		height: 72px;
-	}
-
-		.player.scout .player-ship {
-			background-image: url('../img/scout-ship.png');
-			background-size: 100% 100%;
-		}
-
 	.player.capital {
 		width: 150px;
 		height: 150px;
@@ -95,15 +85,39 @@ body {
 			background-size: 100% 100%;
 		}
 
+	.player.scout {
+		width: 52px;
+		height: 52px;
+		margin-left: -26px;
+		margin-top: -26px;
+	}
+
+		.player.scout .player-ship {
+			background-image: url('../img/scout-ship.png');
+			background-size: 100% 100%;
+		}
+
 	.player.gunship {
-		width: 150px;
-		height: 150px;
-		margin-left: -75px;
-		margin-top: -75px;
+		width: 72px;
+		height: 72px;
+		margin-left: -32px;
+		margin-top: -32px;
 	}
 
 		.player.gunship .player-ship {
 			background-image: url('../img/starfighter.png');
+			background-size: 100% 100%;
+		}
+
+	.player.battleship {
+		width: 72px;
+		height: 72px;
+		margin-left: -32px;
+		margin-top: -32px;
+	}
+
+		.player.battleship .player-ship {
+			background-image: url('../img/interceptor-ship.png');
 			background-size: 100% 100%;
 		}
 
