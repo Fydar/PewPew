@@ -28,7 +28,7 @@ namespace HuskyNet.WebClient.Services
 			serializer = new JsonSerializer();
 
 			//_ = ConnectAsync("wss://ggj2021.anthonymarmont.com");
-			_ = ConnectAsync("wss://localhost:5001");
+			_ = ConnectAsync("ws://localhost:5000");
 		}
 
 		public async Task ConnectAsync(string serverUrl)
