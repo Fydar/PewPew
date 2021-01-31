@@ -1,4 +1,5 @@
-﻿using LostInSpace.WebApp.Shared.Commands;
+﻿using Husky.Game.Shared.Model;
+using LostInSpace.WebApp.Shared.Commands;
 using LostInSpace.WebApp.Shared.Procedures;
 using LostInSpace.WebApp.Shared.View;
 using System;
@@ -26,6 +27,50 @@ namespace LostInSpace.WebApp.Server.Services
 			}
 
 			var world = networkedView.Lobby.World;
+
+			yield return new ScopedNetworkedViewProcedure(
+				ProcedureScope.Broadcast,
+				new GameTickProcedure()
+				{
+				}
+			);
+
+			foreach (var projectileKvp in world.Projectiles)
+			{
+				var projectile = projectileKvp.Value;
+
+				if (projectile.LifetimeRemaining <= 0)
+				{
+					yield return new ScopedNetworkedViewProcedure(
+						ProcedureScope.Broadcast,
+						new ProjectileDestroyProcedure()
+						{
+							ProjectileId = projectileKvp.Key
+						}
+					);
+				}
+
+				foreach (var shipKvp in world.Ships)
+				{
+					if (shipKvp.Key == projectile.Owner)
+					{
+						continue;
+					}
+
+					var ship = shipKvp.Value;
+
+					if (Vector2.Distance(projectile.Position, ship.Position) <= 16.0f)
+					{
+						yield return new ScopedNetworkedViewProcedure(
+							ProcedureScope.Broadcast,
+							new ProjectileDestroyProcedure()
+							{
+								ProjectileId = projectileKvp.Key
+							}
+						);
+					}
+				}
+			}
 
 			foreach (var shipKvp in world.Ships)
 			{
@@ -72,6 +117,44 @@ namespace LostInSpace.WebApp.Server.Services
 							Rotation = targetAngle
 						}
 					);
+				}
+
+				if (ship.CanShoot)
+				{
+					foreach (var otherShipKvp in world.Ships)
+					{
+						// Ignore self
+						if (otherShipKvp.Key == shipKvp.Key)
+						{
+							continue;
+						}
+
+						var otherShip = otherShipKvp.Value;
+
+						if (ship.IsInCommsRange(otherShip))
+						{
+							var shootDirection = (otherShip.Position - ship.Position).Normalized;
+
+							float shootAngle = Vector2.SignedAngle(Vector2.up, shootDirection.Normalized);
+
+							yield return new ScopedNetworkedViewProcedure(
+								ProcedureScope.Broadcast,
+								new ProjectileFireProcedure()
+								{
+									ProjectileId = LocalId.NewId(),
+									Projectile = new Projectile()
+									{
+										LifetimeRemaining = 10,
+										Owner = shipKvp.Key,
+										Position = ship.Position,
+										Rotation = shootAngle,
+										Velocity = shootDirection * 24.0f
+									}
+								}
+							);
+							break;
+						}
+					}
 				}
 			}
 		}

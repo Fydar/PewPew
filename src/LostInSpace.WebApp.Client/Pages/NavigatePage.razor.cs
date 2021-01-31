@@ -17,6 +17,8 @@ namespace LostInSpace.WebApp.Client.Pages
 		[Inject] protected NavigationManager NavigationManager { get; set; }
 		[Inject] protected IJSRuntime JsRuntime { get; set; }
 
+
+		public NavigateInputMode InputMode { get; set; }
 		public LocalId? CurrentlySelected { get; set; }
 
 		private string InputDebug { get; set; }
@@ -25,7 +27,6 @@ namespace LostInSpace.WebApp.Client.Pages
 		{
 			None,
 			SetDestination,
-
 		}
 
 		protected override Task OnInitializedAsync()
@@ -42,14 +43,33 @@ namespace LostInSpace.WebApp.Client.Pages
 			}
 		}
 
+		public void GotoButtonClick(MouseEventArgs mouseEventArgs)
+		{
+			InputMode = NavigateInputMode.SetDestination;
+		}
+
 		public void MapOnClick(MouseEventArgs mouseEventArgs)
 		{
-			InputDebug = $"{mouseEventArgs.OffsetX} {mouseEventArgs.OffsetY}";
+		}
 
-			_ = ClientService.SendCommandAsync(new SetDestinationPositionCommand()
+		public void MapOnMouseUp(MouseEventArgs mouseEventArgs)
+		{
+			if (mouseEventArgs.Button != 2)
 			{
-				Position = new Vector2((float)mouseEventArgs.OffsetX, (float)mouseEventArgs.OffsetY)
-			});
+				return;
+			}
+
+			if (InputMode == NavigateInputMode.SetDestination)
+			{
+				_ = ClientService.SendCommandAsync(new SetDestinationPositionCommand()
+				{
+					Position = new Vector2((float)mouseEventArgs.OffsetX, (float)mouseEventArgs.OffsetY)
+				});
+			}
+		}
+
+		public void MapOnTouchEnd(TouchEventArgs touchEventArgs)
+		{
 		}
 
 		public void Dispose()
