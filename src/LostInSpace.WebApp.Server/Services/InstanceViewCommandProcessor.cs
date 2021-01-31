@@ -365,9 +365,9 @@ namespace LostInSpace.WebApp.Server.Services
 
 							ship.HasBarrage = true;
 							ship.BarrageRadius = 150.0f;
-							ship.BarrageProjectiles = 8;
+							ship.BarrageProjectiles = 6;
 							ship.BarrageCooldownRemaining = 0;
-							ship.BarrageCoodownWait = 30;
+							ship.BarrageCoodownWait = 60;
 						}
 						else if (ship.ShipType == ShipTypes.Scout)
 						{
@@ -392,6 +392,12 @@ namespace LostInSpace.WebApp.Server.Services
 							ship.BeamDamagePerTick = 16;
 							ship.BeamThickness = 3;
 							ship.BeamsRange = 500;
+
+							ship.HasBarrage = true;
+							ship.BarrageRadius = 150.0f;
+							ship.BarrageProjectiles = 1;
+							ship.BarrageCooldownRemaining = 0;
+							ship.BarrageCoodownWait = 60;
 						}
 						else if (ship.ShipType == ShipTypes.Battleship)
 						{

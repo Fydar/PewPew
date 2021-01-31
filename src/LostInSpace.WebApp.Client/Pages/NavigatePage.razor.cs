@@ -58,6 +58,21 @@ namespace LostInSpace.WebApp.Client.Pages
 
 		public LocalId? CurrentlySelected { get; set; }
 
+		public GameplayShip YourShip
+		{
+			get
+			{
+				if (ClientService.View?.Client == null
+					|| ClientService.View?.Lobby?.World == null)
+				{
+					return null;
+				}
+
+				ClientService.View.Lobby.World.Ships.TryGetValue(ClientService.View.Client.ClientId, out var result);
+				return result;
+			}
+		}
+
 		public enum NavigateInputMode
 		{
 			None,
@@ -87,7 +102,13 @@ namespace LostInSpace.WebApp.Client.Pages
 
 		public void AbilityButtonClicked(MouseEventArgs mouseEventArgs)
 		{
-			UseAbility = true;
+			if (YourShip != null)
+			{
+				if (YourShip.CanBarrage)
+				{
+					UseAbility = true;
+				}
+			}
 		}
 
 		public void MapOnClick(MouseEventArgs mouseEventArgs)
@@ -96,26 +117,27 @@ namespace LostInSpace.WebApp.Client.Pages
 
 		public void MapOnMouseUp(MouseEventArgs mouseEventArgs)
 		{
-			if (mouseEventArgs.Button != 2)
-			{
-				return;
-			}
-
 			if (InputMode == NavigateInputMode.SetDestination)
 			{
-				_ = ClientService.SendCommandAsync(new SetDestinationPositionCommand()
+				if (mouseEventArgs.Button == 2)
 				{
-					Position = new Vector2((float)mouseEventArgs.OffsetX, (float)mouseEventArgs.OffsetY)
-				});
+					_ = ClientService.SendCommandAsync(new SetDestinationPositionCommand()
+					{
+						Position = new Vector2((float)mouseEventArgs.OffsetX, (float)mouseEventArgs.OffsetY)
+					});
+				}
 			}
 			else if (InputMode == NavigateInputMode.Ability)
 			{
-				_ = ClientService.SendCommandAsync(new UseAbilityCommand()
+				if (mouseEventArgs.Button == 1)
 				{
-					TargetLocation = new Vector2((float)mouseEventArgs.OffsetX, (float)mouseEventArgs.OffsetY)
-				});
+					_ = ClientService.SendCommandAsync(new UseAbilityCommand()
+					{
+						TargetLocation = new Vector2((float)mouseEventArgs.OffsetX, (float)mouseEventArgs.OffsetY)
+					});
 
-				UseAbility = false;
+					UseAbility = false;
+				}
 			}
 		}
 
