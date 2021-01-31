@@ -60,9 +60,9 @@ body {
 
 .player {
 	position: absolute;
+	transition: transform linear 0.1s;
 	width: 72px;
 	height: 72px;
-	transition: transform linear 0.1s;
 	margin-left: -36px;
 	margin-top: -36px;
 }
@@ -74,6 +74,28 @@ body {
 		background-size: 100% 100%;
 		transition: transform linear 0.1s;
 	}
+
+	.player.scout {
+		width: 72px;
+		height: 72px;
+	}
+
+		.player.scout .player-ship {
+			background-image: url('../img/ship1.png');
+			background-size: 100% 100%;
+		}
+
+	.player.capital {
+		width: 150px;
+		height: 150px;
+		margin-left: -75px;
+		margin-top: -75px;
+	}
+
+		.player.capital .player-ship {
+			background-image: url('../img/ship1.png');
+			background-size: 100% 100%;
+		}
 
 	.player label {
 		width: 100%;
@@ -90,6 +112,17 @@ body {
 		text-align: center;
 		background-color: #337ab7;
 	}
+
+.range-indicator {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+
+	transform: translate(-50%, -50%);
+
+	border-radius: 50%;
+	border: 2px solid #b12e2e;
+}
 
 .dashboard-row {
 	display: inline-flex;
