@@ -21,11 +21,43 @@
 				}
 			}
 
+			@if (ClientService.View?.Lobby?.World?.Beams != null)
+			{
+				<svg class="beams">
+					@foreach (var beamKvp in ClientService.View.Lobby.World.Beams)
+					{
+						var beam = beamKvp.Value;
+
+						string colour;
+						switch (beam.LifetimeRemaining)
+						{
+							default:
+							case 0:
+								colour = "#8a7c69";
+								break;
+
+							case 1:
+								colour = "#c7ad89";
+								break;
+
+							case 2:
+								colour = "#eecda0";
+								break;
+						}
+
+						<polyline style="stroke: @colour" points="@((int)beam.StartPosition.x),@((int)beam.StartPosition.y) @((int)beam.EndPosition.x),@((int)beam.EndPosition.y)"></polyline>
+					}
+				</svg>
+			}
+
+
 			@if (ClientService.View?.Lobby?.World?.Ships != null)
 			{
 				@foreach (var shipKvp in ClientService.View.Lobby.World.Ships)
 				{
 					var ship = shipKvp.Value;
+
+					var owner = ClientService.View.Lobby.Players[shipKvp.Key];
 
 					<div class="player" style="top: 0; left: 0; transform: translate(@(ship.Position.x)px, @(ship.Position.y)px)">
 
@@ -33,7 +65,8 @@
 
 						</div>
 
-						<label>Name</label>
+						<label>@owner.DisplayName</label>
+						<progress value="@((int)(ship.HealthPercentage * 100))" max="100"></progress>
 
 					</div>
 				}

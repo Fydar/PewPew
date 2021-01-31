@@ -72,6 +72,24 @@ namespace LostInSpace.WebApp.Server.Services
 				}
 			}
 
+			foreach (var beamKvp in world.Beams)
+			{
+				var beam = beamKvp.Value;
+
+				if (beam.LifetimeRemaining >= 0)
+				{
+					yield return new ScopedNetworkedViewProcedure(
+						ProcedureScope.Broadcast,
+						new ShipDamageProcedure()
+						{
+							Source = beam.Owner,
+							Target = beam.Target,
+							Damage = beam.DamagePerTick
+						}
+					);
+				}
+			}
+
 			foreach (var shipKvp in world.Ships)
 			{
 				var ship = shipKvp.Value;
@@ -133,6 +151,33 @@ namespace LostInSpace.WebApp.Server.Services
 
 						if (ship.IsInCommsRange(otherShip))
 						{
+							var offsetDirection = new Vector2(
+								((float)random.NextDouble() - 0.5f) * 2.0f,
+								((float)random.NextDouble() - 0.5f) * 2.0f).Normalized;
+
+							float offsetLength = (float)random.NextDouble();
+
+							var hitPoint = otherShip.Position
+								+ (offsetDirection * offsetLength * otherShip.Radius * 2.0f);
+
+							yield return new ScopedNetworkedViewProcedure(
+								ProcedureScope.Broadcast,
+								new BeamFireProcedure()
+								{
+									BeamId = LocalId.NewId(),
+									Beam = new Beam()
+									{
+										LifetimeRemaining = 2,
+										Owner = shipKvp.Key,
+										Target = otherShipKvp.Key,
+										StartPosition = ship.Position,
+										EndPosition = hitPoint,
+										DamagePerTick = 5,
+									}
+								}
+							);
+
+							/*
 							var shootDirection = (otherShip.Position - ship.Position).Normalized;
 
 							float shootAngle = Vector2.SignedAngle(Vector2.up, shootDirection.Normalized);
@@ -151,7 +196,7 @@ namespace LostInSpace.WebApp.Server.Services
 										Velocity = shootDirection * 24.0f
 									}
 								}
-							);
+							);*/
 							break;
 						}
 					}
@@ -209,15 +254,16 @@ namespace LostInSpace.WebApp.Server.Services
 
 					foreach (var player in networkedView.Lobby.Players)
 					{
-						var ship = new GameplayShip();
-
-						ship.Position = new Vector2(
+						var ship = new GameplayShip
+						{
+							Position = new Vector2(
 							random.Next(0, 512),
 							random.Next(0, 512)
-						);
+						),
 
-						ship.SupplyUnits = random.Next(256, 512);
-						ship.FuelUnits = random.Next(256, 512);
+							SupplyUnits = random.Next(256, 512),
+							FuelUnits = random.Next(256, 512)
+						};
 
 						world.Ships.Add(player.Key, ship);
 					}
