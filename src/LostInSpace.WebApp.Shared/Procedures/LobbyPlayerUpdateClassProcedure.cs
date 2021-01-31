@@ -20,7 +20,8 @@ namespace LostInSpace.WebApp.Shared.Procedures
 				foreach (var otherPlayer in view.Lobby.Players)
 				{
 					if (otherPlayer.Key != Identifier
-						&& otherPlayer.Value.ShipClass == ShipTypes.Capital)
+						&& otherPlayer.Value.ShipClass == ShipTypes.Capital
+						&& otherPlayer.Value.TeamId == player.TeamId)
 					{
 						otherPlayer.Value.ShipClass = ShipTypes.Scout;
 					}

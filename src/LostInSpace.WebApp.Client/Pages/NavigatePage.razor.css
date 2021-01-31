@@ -81,7 +81,7 @@ body {
 	}
 
 		.player.scout .player-ship {
-			background-image: url('../img/ship1.png');
+			background-image: url('../img/scout-ship.png');
 			background-size: 100% 100%;
 		}
 
@@ -93,7 +93,19 @@ body {
 	}
 
 		.player.capital .player-ship {
-			background-image: url('../img/ship1.png');
+			background-image: url('../img/spaceship.png');
+			background-size: 100% 100%;
+		}
+
+	.player.gunship {
+		width: 150px;
+		height: 150px;
+		margin-left: -75px;
+		margin-top: -75px;
+	}
+
+		.player.gunship .player-ship {
+			background-image: url('../img/starfighter.png');
 			background-size: 100% 100%;
 		}
 
