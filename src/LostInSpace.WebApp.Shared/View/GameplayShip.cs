@@ -15,7 +15,7 @@ namespace LostInSpace.WebApp.Shared.View
 		[JsonIgnore] public bool CanShoot => HasBeams && BeamsCooldownRemaining <= 0;
 		[JsonIgnore] public bool IsDestroyed => Health <= 0;
 		[JsonIgnore] public float HealthPercentage => (float)Health / HealthMax;
-		[JsonIgnore] public bool CanBarrage => HasBarrage && BarrageCooldownRemaining <= 0;
+		[JsonIgnore] public bool CanBarrage => !IsDestroyed && HasBarrage && BarrageCooldownRemaining <= 0;
 
 		public string ShipType { get; set; } = "scout";
 		public int HealthMax { get; set; } = 100;
