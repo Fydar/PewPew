@@ -110,14 +110,15 @@
 
 		@{
 			LostInSpace.WebApp.Shared.View.GameplayShip playerShip = null;
+			ClientService.View?.Lobby?.World?.Ships.TryGetValue(ClientService.View.Client.ClientId, out playerShip);
 		}
-		@if (ClientService.View?.Lobby?.World?.Ships.TryGetValue(ClientService.View.Client.ClientId, out playerShip) ?? false
-		  && playerShip.HasBarrage)
+
+		@if (playerShip != null && playerShip.HasBarrage)
 		{
 			bool canBarrage = false;
-			@if (InputMode == NavigateInputMode.SetDestination
-			 && playerShip.CanBarrage)
+			@if (InputMode == NavigateInputMode.SetDestination && playerShip.CanBarrage)
 			{
+				canBarrage = true;
 			}
 
 			<div style="@(canBarrage ? "opacity: 1" : "opacity: 0.3")" class="game-btn game-btn-navigate" @onclick="AbilityButtonClicked">Barrage</div>

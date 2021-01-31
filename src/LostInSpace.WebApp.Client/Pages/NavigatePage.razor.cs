@@ -129,7 +129,7 @@ namespace LostInSpace.WebApp.Client.Pages
 			}
 			else if (InputMode == NavigateInputMode.Ability)
 			{
-				if (mouseEventArgs.Button == 1)
+				if (mouseEventArgs.Button != 1)
 				{
 					_ = ClientService.SendCommandAsync(new UseAbilityCommand()
 					{
