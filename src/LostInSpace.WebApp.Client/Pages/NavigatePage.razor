@@ -7,7 +7,19 @@
 <div class="page-insert">
 
 	<div class="page-gridarea">
-		<div class="grid" id="zoomcanvasid" @onclick="MapOnClick">
+		<div class="grid" id="zoomcanvasid" @onclick="MapOnClick" @onmouseup="MapOnMouseUp" oncontextmenu="return false;" style="@(InputMode == NavigateInputMode.SetDestination ? "cursor: crosshair;" : "")">
+
+			@if (ClientService.View?.Lobby?.World?.Projectiles != null)
+			{
+				@foreach (var projectileKvp in ClientService.View.Lobby.World.Projectiles)
+				{
+					var projectile = projectileKvp.Value;
+
+					<div class="projectile" style="top: 0; left: 0; transform: translate(@(projectile.Position.x)px, @(projectile.Position.y)px) rotate(@(projectile.Rotation + 180.0f)deg);">
+
+					</div>
+				}
+			}
 
 			@if (ClientService.View?.Lobby?.World?.Ships != null)
 			{
@@ -28,7 +40,10 @@
 			}
 		</div>
 
-		<div class="game-btn game-btn-navigate">Goto</div>
+		@if (InputMode == NavigateInputMode.None)
+		{
+			<div class="game-btn game-btn-navigate" @onclick="GotoButtonClick">Goto</div>
+		}
 	</div>
 
 	<div class="page-statusarea">

@@ -11,5 +11,8 @@ namespace LostInSpace.WebApp.Shared.View
 	public class GameplayWorld
 	{
 		public Dictionary<LocalId, GameplayShip> Ships { get; set; } = new Dictionary<LocalId, GameplayShip>();
+		public Dictionary<LocalId, Projectile> Projectiles { get; set; } = new Dictionary<LocalId, Projectile>();
+
+		public List<string> BattleLog { get; set; } = new List<string>();
 	}
 }

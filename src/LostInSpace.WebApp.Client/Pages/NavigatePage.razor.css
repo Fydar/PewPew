@@ -4,7 +4,7 @@
 	margin: 0;
 	padding: 4px;
 	display: grid;
-	grid-template-rows: auto 256px;
+	grid-template-rows: auto 128px;
 	height: 100%;
 	grid-gap: 4px;
 }
@@ -34,6 +34,16 @@
 	height: 2048px;
 	width: 2048px;
 	position: absolute;
+}
+
+.projectile {
+	position: absolute;
+	width: 2px;
+	height: 8px;
+	margin-left: -1px;
+	margin-top: -4px;
+	background-color: #fff;
+	/* transition: transform linear 1s; */
 }
 
 .player {
@@ -106,8 +116,8 @@
 	position: absolute;
 	right: 16px;
 	bottom: 16px;
-	width: 128px;
-	height: 128px;
+	width: 96px;
+	height: 96px;
 	border-radius: 50%;
 	border: 4px solid #eee;
 	background-color: #424242;

@@ -9,10 +9,18 @@ namespace LostInSpace.WebApp.Shared.View
 	{
 		public Vector2 Position { get; set; }
 		public float Rotation { get; set; }
+		public int Health { get; set; } = 100;
+		public int CooldownRemaining { get; set; } = 10;
+
+		public bool CanShoot => CooldownRemaining <= 0;
+		public bool IsDestroyed => Health <= 0;
 
 		public int FuelUnits { get; set; }
 		public int SupplyUnits { get; set; }
 
+		public int CooldownWait { get; set; } = 10;
+		public int MinDamage { get; set; } = 10;
+		public int MaxDamage { get; set; } = 10;
 		public float MovementSpeed { get; set; } = 8.0f;
 		public float Radius { get; set; } = 16.0f;
 

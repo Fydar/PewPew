@@ -6,12 +6,15 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LostInSpace.WebApp.Server.Services
 {
 	public class GameServerWorker
 	{
+		private readonly Mutex viewMutex = new Mutex(false);
 		private readonly JsonSerializer serializer;
 
 		public InstanceViewCommandProcessor CommandProcessor { get; }
@@ -30,19 +33,25 @@ namespace LostInSpace.WebApp.Server.Services
 
 			Portal.OnConnect += connection =>
 			{
+				viewMutex.WaitOne();
 				var procedures = CommandProcessor.HandlePlayerConnect(connection);
 				ApplyViewProcedures(procedures, connection);
+				viewMutex.ReleaseMutex();
 			};
 			Portal.OnDisconnect += connection =>
 			{
+				viewMutex.WaitOne();
 				var procedures = CommandProcessor.HandlePlayerDisconnect(connection);
 				ApplyViewProcedures(procedures, connection);
+				viewMutex.ReleaseMutex();
 			};
 			Portal.OnMessageRecieved += (connection, message) =>
 			{
+				viewMutex.WaitOne();
 				var command = DeserializeClientCommand(message.Content);
 				var procedures = CommandProcessor.HandleRecieveCommand(connection, command);
 				ApplyViewProcedures(procedures, connection);
+				viewMutex.ReleaseMutex();
 			};
 
 			_ = GameTickerWorker();
@@ -52,10 +61,12 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			while (true)
 			{
-				await Task.Delay(1000);
+				await Task.Delay(1000 / 10);
 
-				var procedures = CommandProcessor.HandleGameTick();
+				viewMutex.WaitOne();
+				var procedures = CommandProcessor.HandleGameTick().ToList();
 				ApplyViewProcedures(procedures, null);
+				viewMutex.ReleaseMutex();
 			}
 		}
 
