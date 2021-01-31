@@ -169,6 +169,18 @@ namespace LostInSpace.WebApp.Server.Services
 							continue;
 						}
 
+						// Ignore teammates
+						if (networkedView.Lobby.Players.TryGetValue(otherShipKvp.Key, out var otherPlayer))
+						{
+							if (networkedView.Lobby.Players.TryGetValue(shipKvp.Key, out var thisPlayer))
+							{
+								if (thisPlayer.TeamId == otherPlayer.TeamId)
+								{
+									continue;
+								}
+							}
+						}
+
 						if (ship.IsInBeamsRange(otherShip))
 						{
 							var offsetDirection = new Vector2(
