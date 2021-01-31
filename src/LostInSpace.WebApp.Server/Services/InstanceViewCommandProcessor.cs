@@ -216,7 +216,7 @@ namespace LostInSpace.WebApp.Server.Services
 							float offsetLength = (float)random.NextDouble();
 
 							var hitPoint = otherShip.Position
-								+ (offsetDirection * offsetLength * otherShip.Radius * 1.5f);
+								+ (offsetDirection * offsetLength * otherShip.Radius * 1.0f);
 
 							yield return new ScopedNetworkedViewProcedure(
 								ProcedureScope.Broadcast,
@@ -380,6 +380,8 @@ namespace LostInSpace.WebApp.Server.Services
 							ship.BeamDamagePerTick = 10;
 							ship.BeamThickness = 2;
 							ship.BeamsRange = 400;
+
+							ship.HasBarrage = false;
 						}
 						else if (ship.ShipType == ShipTypes.Gunship)
 						{
@@ -410,6 +412,8 @@ namespace LostInSpace.WebApp.Server.Services
 							ship.BeamDamagePerTick = 10;
 							ship.BeamThickness = 2;
 							ship.BeamsRange = 300;
+
+							ship.HasBarrage = false;
 						}
 
 						world.Ships.Add(player.Key, ship);
