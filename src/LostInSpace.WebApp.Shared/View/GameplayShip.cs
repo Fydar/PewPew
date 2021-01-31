@@ -24,9 +24,9 @@ namespace LostInSpace.WebApp.Shared.View
 
 		public bool HasBeams { get; set; } = true;
 		public float BeamsRange { get; set; } = 300;
-		public int BeamsCooldownWait { get; set; } = 10;
-		public int BeamsMinDamage { get; set; } = 10;
-		public int BeamsMaxDamage { get; set; } = 10;
+		public int BeamsCooldownWait { get; set; } = 8;
+		public int BeamDamagePerTick { get; set; } = 5;
+		public int BeamThickness { get; set; } = 4;
 		public int BeamsCooldownRemaining { get; set; } = 10;
 
 		public ShipAction Action { get; set; }
