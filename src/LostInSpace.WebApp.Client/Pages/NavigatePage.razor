@@ -7,7 +7,21 @@
 <div class="page-insert">
 
 	<div class="page-gridarea">
-		<div class="grid" id="zoomcanvasid" @onclick="MapOnClick" @onmouseup="MapOnMouseUp" oncontextmenu="return false;" style="@(InputMode == NavigateInputMode.SetDestination ? "cursor: crosshair;" : "")">
+
+		@{
+			string cursor = "default";
+
+			if (InputMode == NavigateInputMode.SetDestination)
+			{
+				cursor = "crosshair";
+			}
+			else if (InputMode == NavigateInputMode.Ability)
+			{
+				cursor = "cell";
+			}
+		}
+
+		<div class="grid" id="zoomcanvasid" @onclick="MapOnClick" @onmouseup="MapOnMouseUp" oncontextmenu="return false;" style="cursor: @cursor;">
 
 			@if (ClientService.View?.Lobby?.World?.Projectiles != null)
 			{
@@ -15,8 +29,7 @@
 				{
 					var projectile = projectileKvp.Value;
 
-					<div class="projectile" style="top: 0; left: 0; transform: translate(@(projectile.Position.x)px, @(projectile.Position.y)px) rotate(@(projectile.Rotation + 180.0f)deg);">
-
+					<div class="projectile" style="top: 0; left: 0; transform: translate(@(projectile.Position.x)px, @(projectile.Position.y)px) rotate(@(projectile.Rotation + 180.0f)deg); @(projectile.IsDestroyed ? "opacity: 0;" : "")">
 					</div>
 				}
 			}
@@ -45,11 +58,10 @@
 								break;
 						}
 
-						<polyline style="stroke: @colour" points="@((int)beam.StartPosition.x),@((int)beam.StartPosition.y) @((int)beam.EndPosition.x),@((int)beam.EndPosition.y)"></polyline>
+						<polyline style="stroke: @colour; stroke-width: @beam.DamagePerTick;" points="@((int)beam.StartPosition.x),@((int)beam.StartPosition.y) @((int)beam.EndPosition.x),@((int)beam.EndPosition.y)"></polyline>
 					}
 				</svg>
 			}
-
 
 			@if (ClientService.View?.Lobby?.World?.Ships != null)
 			{
@@ -84,5 +96,17 @@
 				}
 			}
 		</div>
+
+		@{
+			LostInSpace.WebApp.Shared.View.GameplayShip playerShip = null;
+		}
+		@if (ClientService.View?.Lobby?.World?.Ships.TryGetValue(ClientService.View.Client.ClientId, out playerShip) ?? false)
+		{
+			@if (InputMode == NavigateInputMode.SetDestination
+			   && playerShip.CanBarrage)
+			{
+				<div class="game-btn game-btn-navigate" @onclick="AbilityButtonClicked">Barrage</div>
+			}
+		}
 	</div>
 </div>

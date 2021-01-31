@@ -41,7 +41,7 @@ body {
 	margin-left: -1px;
 	margin-top: -4px;
 	background-color: #fff;
-	/* transition: transform linear 1s; */
+	transition: transform linear 0.4s;
 }
 
 .beams {

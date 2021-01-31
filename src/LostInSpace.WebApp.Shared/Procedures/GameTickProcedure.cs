@@ -16,6 +16,7 @@ namespace LostInSpace.WebApp.Shared.Procedures
 				projectile.LifetimeRemaining--;
 			}
 
+
 			var removeKeys = new List<LocalId>();
 			foreach (var beamKvp in view.Lobby.World.Beams)
 			{
@@ -41,6 +42,11 @@ namespace LostInSpace.WebApp.Shared.Procedures
 				if (ship.BeamsCooldownRemaining > 0)
 				{
 					ship.BeamsCooldownRemaining--;
+				}
+
+				if (ship.BarrageCooldownRemaining > 0)
+				{
+					ship.BarrageCooldownRemaining--;
 				}
 			}
 		}
