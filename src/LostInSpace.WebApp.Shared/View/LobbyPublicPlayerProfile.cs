@@ -1,6 +1,4 @@
-﻿using Husky.Game.Shared.Model;
-
-namespace LostInSpace.WebApp.Shared.View
+﻿namespace LostInSpace.WebApp.Shared.View
 {
 	/// <summary>
 	/// A public representation of a player connected to the lobby.
@@ -9,5 +7,6 @@ namespace LostInSpace.WebApp.Shared.View
 	{
 		public int TeamId { get; set; }
 		public string DisplayName { get; set; }
+		public string ShipClass { get; set; } = ShipTypes.Scout;
 	}
 }

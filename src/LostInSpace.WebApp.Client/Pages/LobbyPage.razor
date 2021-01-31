@@ -32,13 +32,18 @@
 								}
 
 								<div class="input-group">
-									@if (player.Key == ClientService.View.Client.ClientId)
+									@if (player.Key == ClientService.View?.Client.ClientId)
 									{
-										<input class="form-control" @bind="YourName" @bind:event="oninput" />
+										<input class="form-control col-sm-8" @bind="YourName" @bind:event="oninput" />
+										<select class="form-select col-sm-4" @bind="YourClass" >
+											<option value="scout">Scout</option>
+											<option value="capital">Capital</option>
+										</select>
 									}
 									else
 									{
-										<span class="input-group-text" id="basic-addon1">@player.Value.DisplayName</span>
+										<span class="input-group-text col-sm-8" id="basic-addon1">@player.Value.DisplayName</span>
+										<span class="input-group-text col-sm-4" id="basic-addon1">@player.Value.ShipClass</span>
 									}
 								</div>
 							}

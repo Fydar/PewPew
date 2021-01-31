@@ -20,11 +20,33 @@ namespace LostInSpace.WebApp.Client.Pages
 		{
 			get
 			{
+				if (ClientService.View?.Client == null)
+				{
+					return "";
+				}
+
 				return ClientService.View?.Lobby?.Players[ClientService.View.Client.ClientId].DisplayName ?? "";
 			}
 			set
 			{
 				UpdateDisplayName(value);
+			}
+		}
+
+		public string YourClass
+		{
+			get
+			{
+				if (ClientService.View?.Client == null)
+				{
+					return ShipTypes.Scout;
+				}
+
+				return ClientService.View?.Lobby?.Players[ClientService.View.Client.ClientId].ShipClass ?? ShipTypes.Scout;
+			}
+			set
+			{
+				UpdateShipClass(value);
 			}
 		}
 
@@ -40,6 +62,14 @@ namespace LostInSpace.WebApp.Client.Pages
 			_ = ClientService.SendCommandAsync(new LobbyUpdateDisplayNameCommand()
 			{
 				DisplayName = newDisplayName
+			});
+		}
+
+		public void UpdateShipClass(string newShipClass)
+		{
+			_ = ClientService.SendCommandAsync(new LobbyUpdateClassCommand()
+			{
+				ShipClass = newShipClass
 			});
 		}
 

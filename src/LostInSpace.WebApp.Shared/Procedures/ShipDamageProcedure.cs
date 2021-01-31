@@ -11,6 +11,11 @@ namespace LostInSpace.WebApp.Shared.Procedures
 
 		public override void ApplyToView(NetworkedView view)
 		{
+			if (!(view.Lobby.World?.Ships.ContainsKey(Target) ?? false))
+			{
+				return;
+			}
+
 			var clientNetworkedView = view as ClientNetworkedView;
 
 			var ship = view.Lobby.World.Ships[Target];
