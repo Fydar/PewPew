@@ -72,6 +72,18 @@ namespace LostInSpace.WebApp.Server.Services
 						continue;
 					}
 
+					// Ignore teammates
+					if (networkedView.Lobby.Players.TryGetValue(projectile.Owner, out var thisOwnership))
+					{
+						if (networkedView.Lobby.Players.TryGetValue(shipKvp.Key, out var thisPlayer))
+						{
+							if (thisPlayer.TeamId == thisOwnership.TeamId)
+							{
+								continue;
+							}
+						}
+					}
+
 					var ship = shipKvp.Value;
 
 					if (Vector2.Distance(projectile.Position, ship.Position) - ship.Radius <= 2.0f)
@@ -354,12 +366,12 @@ namespace LostInSpace.WebApp.Server.Services
 						if (ship.ShipType == ShipTypes.Capital)
 						{
 							ship.Radius = 70;
-							ship.MovementSpeed = 3.0f;
+							ship.MovementSpeed = 5.0f;
 
-							ship.HealthMax = 1000;
-							ship.Health = 1000;
+							ship.HealthMax = 700;
+							ship.Health = 700;
 
-							ship.BeamsRange = 500;
+							ship.BeamsRange = 550;
 							ship.BeamDamagePerTick = 15;
 							ship.BeamThickness = 5;
 
@@ -371,49 +383,57 @@ namespace LostInSpace.WebApp.Server.Services
 						}
 						else if (ship.ShipType == ShipTypes.Scout)
 						{
-							ship.Radius = 26;
-							ship.MovementSpeed = 10.0f;
+							ship.Radius = 36;
+							ship.MovementSpeed = 14.0f;
 
 							ship.HealthMax = 100;
 							ship.Health = 100;
 
 							ship.BeamDamagePerTick = 10;
 							ship.BeamThickness = 2;
-							ship.BeamsRange = 400;
+							ship.BeamsRange = 500;
+							ship.BeamsCooldownWait = 6;
 
 							ship.HasBarrage = false;
 						}
 						else if (ship.ShipType == ShipTypes.Gunship)
 						{
-							ship.Radius = 32;
-							ship.MovementSpeed = 5.0f;
+							ship.Radius = 40;
+							ship.MovementSpeed = 7.0f;
 
 							ship.HealthMax = 100;
 							ship.Health = 100;
 
 							ship.BeamDamagePerTick = 16;
 							ship.BeamThickness = 3;
-							ship.BeamsRange = 500;
+							ship.BeamsRange = 600;
 
 							ship.HasBarrage = true;
-							ship.BarrageRadius = 150.0f;
+							ship.BarrageRadius = 50.0f;
 							ship.BarrageProjectiles = 1;
 							ship.BarrageCooldownRemaining = 0;
 							ship.BarrageCoodownWait = 60;
 						}
 						else if (ship.ShipType == ShipTypes.Battleship)
 						{
-							ship.Radius = 32;
-							ship.MovementSpeed = 3.0f;
+							ship.Radius = 40;
+							ship.MovementSpeed = 5.5f;
 
 							ship.HealthMax = 260;
 							ship.Health = 260;
 
 							ship.BeamDamagePerTick = 10;
 							ship.BeamThickness = 2;
-							ship.BeamsRange = 300;
+							ship.BeamsRange = 400;
 
 							ship.HasBarrage = false;
+
+							ship.HasBarrage = true;
+							ship.BarrageRadius = 50.0f;
+							ship.BarrageProjectiles = 3;
+							ship.BarrageCooldownRemaining = 0;
+							ship.BarrageCoodownWait = 40;
+							ship.BarrageDamagePerProjectile = 10;
 						}
 
 						world.Ships.Add(player.Key, ship);
