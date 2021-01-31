@@ -46,11 +46,25 @@
 	/* transition: transform linear 1s; */
 }
 
+.beams {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+}
+
+	.beams polyline {
+		fill: none;
+		stroke-width: 3;
+		stroke-linecap: round;
+	}
+
 .player {
 	position: absolute;
 	width: 72px;
 	height: 72px;
-	transition: transform linear 1s;
+	transition: transform linear 0.1s;
 	margin-left: -36px;
 	margin-top: -36px;
 }
@@ -60,7 +74,7 @@
 		height: 100%;
 		background-image: url('../img/ship1.png');
 		background-size: 100% 100%;
-		transition: transform linear 1s;
+		transition: transform linear 0.1s;
 	}
 
 	.player label {
@@ -68,6 +82,15 @@
 		text-align: center;
 		color: #eee;
 		-webkit-font-smoothing: antialiased;
+	}
+
+	.player progress {
+		width: 100%;
+		font-size: 12px;
+		line-height: 20px;
+		color: #fff;
+		text-align: center;
+		background-color: #337ab7;
 	}
 
 .dashboard-row {

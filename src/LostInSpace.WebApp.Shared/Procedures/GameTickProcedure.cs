@@ -1,4 +1,6 @@
-﻿using LostInSpace.WebApp.Shared.View;
+﻿using Husky.Game.Shared.Model;
+using LostInSpace.WebApp.Shared.View;
+using System.Collections.Generic;
 
 namespace LostInSpace.WebApp.Shared.Procedures
 {
@@ -13,6 +15,24 @@ namespace LostInSpace.WebApp.Shared.Procedures
 				projectile.Position += projectile.Velocity;
 				projectile.LifetimeRemaining--;
 			}
+
+			var removeKeys = new List<LocalId>();
+			foreach (var beamKvp in view.Lobby.World.Beams)
+			{
+				var beam = beamKvp.Value;
+
+				beam.LifetimeRemaining--;
+
+				if (beam.LifetimeRemaining <= 0)
+				{
+					removeKeys.Add(beamKvp.Key);
+				}
+			}
+			foreach (var removeKey in removeKeys)
+			{
+				view.Lobby.World.Beams.Remove(removeKey);
+			}
+
 
 			foreach (var shipKvp in view.Lobby.World.Ships)
 			{
