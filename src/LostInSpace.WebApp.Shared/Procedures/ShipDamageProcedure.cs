@@ -15,6 +15,11 @@ namespace LostInSpace.WebApp.Shared.Procedures
 
 			var ship = view.Lobby.World.Ships[Target];
 
+			if (ship.IsDestroyed)
+			{
+				return;
+			}
+
 			ship.Health -= Damage;
 
 			if (clientNetworkedView != null && Source == clientNetworkedView.Client.ClientId)

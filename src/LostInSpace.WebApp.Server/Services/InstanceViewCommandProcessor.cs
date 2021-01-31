@@ -313,6 +313,16 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			yield return new ScopedNetworkedViewProcedure(
 				ProcedureScope.Broadcast,
+				new ShipDamageProcedure()
+				{
+					Source = connection.Identifier,
+					Target = connection.Identifier,
+					Damage = 10000
+				}
+			);
+
+			yield return new ScopedNetworkedViewProcedure(
+				ProcedureScope.Broadcast,
 				new LobbyPlayerLeaveProcedure()
 				{
 					Identifier = connection.Identifier
