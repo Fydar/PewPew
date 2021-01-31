@@ -57,10 +57,10 @@ namespace LostInSpace.WebApp.Server
 			else
 			{
 				app.UseExceptionHandler("/Error");
-				app.UseHsts();
+				//app.UseHsts();
 			}
 
-			app.UseHttpsRedirection();
+			// app.UseHttpsRedirection();
 			app.UseBlazorFrameworkFiles();
 			app.UseStaticFiles();
 
