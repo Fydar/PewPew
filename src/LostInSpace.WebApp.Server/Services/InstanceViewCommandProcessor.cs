@@ -8,34 +8,6 @@ using System.Linq;
 
 namespace LostInSpace.WebApp.Server.Services
 {
-	public static class RandomName
-	{
-		private static readonly Random random = new Random();
-
-		private static readonly string[] prefix = new string[]
-		{
-			"Smart",
-			"Quick",
-			"Rabid",
-			"Ace",
-			"Furry",
-		};
-
-		private static readonly string[] animals = new string[]
-		{
-			"Fox",
-			"Owl",
-			"Seal",
-			"Penguin",
-			"Chicken"
-		};
-
-		public static string Get()
-		{
-			return $"{prefix[random.Next(0, prefix.Length)]} {animals[random.Next(0, animals.Length)]}";
-		}
-	}
-
 	public class InstanceViewCommandProcessor
 	{
 		private readonly NetworkedView networkedView;
@@ -56,7 +28,6 @@ namespace LostInSpace.WebApp.Server.Services
 			}
 
 			var world = networkedView.Lobby.World;
-
 
 			int teamAAlive = networkedView.Lobby.World.Ships.Where(s => !s.Value.IsDestroyed).Count(p => networkedView.Lobby.Players[p.Key].TeamId == 0);
 			int teamBAlive = networkedView.Lobby.World.Ships.Where(s => !s.Value.IsDestroyed).Count(p => networkedView.Lobby.Players[p.Key].TeamId == 1);
@@ -103,8 +74,7 @@ namespace LostInSpace.WebApp.Server.Services
 						continue;
 					}
 
-
-				   var ship = shipKvp.Value;
+					var ship = shipKvp.Value;
 
 					if (Vector2.Distance(projectile.Position, ship.Position) <= 16.0f)
 					{
@@ -206,7 +176,7 @@ namespace LostInSpace.WebApp.Server.Services
 							continue;
 						}
 
-						if (ship.IsInWeaponsRange(otherShip))
+						if (ship.IsInBeamsRange(otherShip))
 						{
 							var offsetDirection = new Vector2(
 								((float)random.NextDouble() - 0.5f) * 2.0f,
@@ -359,10 +329,20 @@ namespace LostInSpace.WebApp.Server.Services
 								random.Next((int)minBound.x, (int)maxBound.x),
 								random.Next((int)minBound.y, (int)maxBound.y)
 							),
-
-							SupplyUnits = random.Next(256, 512),
-							FuelUnits = random.Next(256, 512)
+							ShipType = player.Value.ShipClass,
 						};
+
+						if (ship.ShipType == ShipTypes.Capital)
+						{
+							ship.Radius = 32;
+							ship.MovementSpeed = 3.0f;
+
+							ship.BeamsRange = 400;
+						}
+						else if (ship.ShipType == ShipTypes.Scout)
+						{
+
+						}
 
 						world.Ships.Add(player.Key, ship);
 					}
@@ -398,6 +378,19 @@ namespace LostInSpace.WebApp.Server.Services
 						{
 							Identifier = connection.Identifier,
 							DisplayName = command.DisplayName
+						}
+					);
+					break;
+				}
+
+				case LobbyUpdateClassCommand command:
+				{
+					yield return new ScopedNetworkedViewProcedure(
+						ProcedureScope.Broadcast,
+						new LobbyPlayerUpdateClassProcedure()
+						{
+							Identifier = connection.Identifier,
+							ShipClass = command.ShipClass
 						}
 					);
 					break;

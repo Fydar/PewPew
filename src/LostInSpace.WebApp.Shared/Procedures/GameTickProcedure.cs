@@ -38,9 +38,9 @@ namespace LostInSpace.WebApp.Shared.Procedures
 			{
 				var ship = shipKvp.Value;
 
-				if (ship.CooldownRemaining > 0)
+				if (ship.BeamsCooldownRemaining > 0)
 				{
-					ship.CooldownRemaining--;
+					ship.BeamsCooldownRemaining--;
 				}
 			}
 		}
