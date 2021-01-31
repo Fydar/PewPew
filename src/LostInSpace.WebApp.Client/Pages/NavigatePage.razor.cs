@@ -28,6 +28,10 @@ namespace LostInSpace.WebApp.Client.Pages
 
 				if (ClientService.View?.Lobby?.World?.Ships.ContainsKey(ClientService.View.Client.ClientId) ?? false)
 				{
+					if (UseAbility)
+					{
+						return NavigateInputMode.Ability;
+					}
 					return NavigateInputMode.SetDestination;
 				}
 				else
@@ -36,6 +40,8 @@ namespace LostInSpace.WebApp.Client.Pages
 				}
 			}
 		}
+
+		public bool UseAbility { get; set; } = false;
 
 		public int YourTeam
 		{
@@ -56,6 +62,7 @@ namespace LostInSpace.WebApp.Client.Pages
 		{
 			None,
 			SetDestination,
+			Ability,
 		}
 
 		protected override Task OnInitializedAsync()
@@ -78,8 +85,9 @@ namespace LostInSpace.WebApp.Client.Pages
 			}
 		}
 
-		public void GotoButtonClick(MouseEventArgs mouseEventArgs)
+		public void AbilityButtonClicked(MouseEventArgs mouseEventArgs)
 		{
+			UseAbility = true;
 		}
 
 		public void MapOnClick(MouseEventArgs mouseEventArgs)
@@ -99,6 +107,15 @@ namespace LostInSpace.WebApp.Client.Pages
 				{
 					Position = new Vector2((float)mouseEventArgs.OffsetX, (float)mouseEventArgs.OffsetY)
 				});
+			}
+			else if (InputMode == NavigateInputMode.Ability)
+			{
+				_ = ClientService.SendCommandAsync(new UseAbilityCommand()
+				{
+					TargetLocation = new Vector2((float)mouseEventArgs.OffsetX, (float)mouseEventArgs.OffsetY)
+				});
+
+				UseAbility = false;
 			}
 		}
 

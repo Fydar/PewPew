@@ -48,7 +48,12 @@ namespace LostInSpace.WebApp.Server.Services
 			{
 				var projectile = projectileKvp.Value;
 
-				if (projectile.LifetimeRemaining <= 0)
+				if (projectile.IsDestroyed)
+				{
+					continue;
+				}
+
+				/*if (projectile.LifetimeRemaining <= 0)
 				{
 					yield return new ScopedNetworkedViewProcedure(
 						ProcedureScope.Broadcast,
@@ -57,7 +62,7 @@ namespace LostInSpace.WebApp.Server.Services
 							ProjectileId = projectileKvp.Key
 						}
 					);
-				}
+				}*/
 
 				foreach (var shipKvp in world.Ships)
 				{
@@ -69,7 +74,7 @@ namespace LostInSpace.WebApp.Server.Services
 
 					var ship = shipKvp.Value;
 
-					if (Vector2.Distance(projectile.Position, ship.Position) <= 16.0f)
+					if (Vector2.Distance(projectile.Position, ship.Position) - ship.Radius <= 2.0f)
 					{
 						yield return new ScopedNetworkedViewProcedure(
 							ProcedureScope.Broadcast,
@@ -78,6 +83,17 @@ namespace LostInSpace.WebApp.Server.Services
 								ProjectileId = projectileKvp.Key
 							}
 						);
+
+						yield return new ScopedNetworkedViewProcedure(
+							ProcedureScope.Broadcast,
+							new ShipDamageProcedure()
+							{
+								Damage = projectile.Damage,
+								Source = projectile.Owner,
+								Target = shipKvp.Key
+							}
+						);
+						break;
 					}
 				}
 			}
@@ -214,31 +230,12 @@ namespace LostInSpace.WebApp.Server.Services
 										Target = otherShipKvp.Key,
 										StartPosition = ship.Position,
 										EndPosition = hitPoint,
-										DamagePerTick = 5,
+										DamagePerTick = ship.BeamDamagePerTick,
+										Thickness = ship.BeamThickness
 									}
 								}
 							);
 
-							/*
-							var shootDirection = (otherShip.Position - ship.Position).Normalized;
-
-							float shootAngle = Vector2.SignedAngle(Vector2.up, shootDirection.Normalized);
-
-							yield return new ScopedNetworkedViewProcedure(
-								ProcedureScope.Broadcast,
-								new ProjectileFireProcedure()
-								{
-									ProjectileId = LocalId.NewId(),
-									Projectile = new Projectile()
-									{
-										LifetimeRemaining = 10,
-										Owner = shipKvp.Key,
-										Position = ship.Position,
-										Rotation = shootAngle,
-										Velocity = shootDirection * 24.0f
-									}
-								}
-							);*/
 							break;
 						}
 					}
@@ -278,7 +275,7 @@ namespace LostInSpace.WebApp.Server.Services
 			int teamACount = networkedView.Lobby.Players.Count(p => p.Value.TeamId == 0);
 			int teamBCount = networkedView.Lobby.Players.Count(p => p.Value.TeamId == 1);
 
-			if (teamACount < teamBCount)
+			if (teamACount <= teamBCount)
 			{
 				playerTeam = 0;
 			}
@@ -363,8 +360,14 @@ namespace LostInSpace.WebApp.Server.Services
 							ship.Health = 1000;
 
 							ship.BeamsRange = 500;
-							ship.BeamDamagePerTick = 10;
+							ship.BeamDamagePerTick = 15;
 							ship.BeamThickness = 5;
+
+							ship.HasBarrage = true;
+							ship.BarrageRadius = 150.0f;
+							ship.BarrageProjectiles = 8;
+							ship.BarrageCooldownRemaining = 0;
+							ship.BarrageCoodownWait = 30;
 						}
 						else if (ship.ShipType == ShipTypes.Scout)
 						{
@@ -374,7 +377,7 @@ namespace LostInSpace.WebApp.Server.Services
 							ship.HealthMax = 100;
 							ship.Health = 100;
 
-							ship.BeamDamagePerTick = 5;
+							ship.BeamDamagePerTick = 10;
 							ship.BeamThickness = 2;
 							ship.BeamsRange = 400;
 						}
@@ -386,7 +389,7 @@ namespace LostInSpace.WebApp.Server.Services
 							ship.HealthMax = 100;
 							ship.Health = 100;
 
-							ship.BeamDamagePerTick = 8;
+							ship.BeamDamagePerTick = 16;
 							ship.BeamThickness = 3;
 							ship.BeamsRange = 500;
 						}
@@ -398,7 +401,7 @@ namespace LostInSpace.WebApp.Server.Services
 							ship.HealthMax = 260;
 							ship.Health = 260;
 
-							ship.BeamDamagePerTick = 5;
+							ship.BeamDamagePerTick = 10;
 							ship.BeamThickness = 2;
 							ship.BeamsRange = 300;
 						}
@@ -426,6 +429,46 @@ namespace LostInSpace.WebApp.Server.Services
 							TeamId = command.NewTeamId
 						}
 					);
+					break;
+				}
+
+				case UseAbilityCommand command:
+				{
+					var ship = networkedView.Lobby.World.Ships[connection.Identifier];
+
+					for (int i = 0; i < ship.BarrageProjectiles; i++)
+					{
+						var offsetDirection = new Vector2(
+							((float)random.NextDouble() - 0.5f) * 2.0f,
+							((float)random.NextDouble() - 0.5f) * 2.0f).Normalized;
+
+						float offsetLength = (float)random.NextDouble();
+
+						var hitPoint = command.TargetLocation
+							+ (offsetDirection * offsetLength * ship.BarrageRadius);
+
+						var shootDirection = (hitPoint - ship.Position).Normalized;
+
+						float shootAngle = Vector2.SignedAngle(Vector2.up, shootDirection.Normalized);
+
+						yield return new ScopedNetworkedViewProcedure(
+							ProcedureScope.Broadcast,
+							new ProjectileFireProcedure()
+							{
+								ProjectileId = LocalId.NewId(),
+								Projectile = new Projectile()
+								{
+									LifetimeRemaining = 80,
+									Owner = connection.Identifier,
+									Position = ship.Position,
+									Rotation = shootAngle,
+									Velocity = shootDirection * 72.0f,
+									Damage = ship.BarrageDamagePerProjectile
+								}
+							}
+						);
+					}
+
 					break;
 				}
 

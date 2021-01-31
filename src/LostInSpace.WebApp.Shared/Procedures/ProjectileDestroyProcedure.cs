@@ -9,7 +9,11 @@ namespace LostInSpace.WebApp.Shared.Procedures
 
 		public override void ApplyToView(NetworkedView view)
 		{
-			view.Lobby.World.Projectiles.Remove(ProjectileId);
+			// view.Lobby.World.Projectiles.Remove(ProjectileId);
+
+			var projectile = view.Lobby.World.Projectiles[ProjectileId];
+
+			projectile.LifetimeRemaining = 0;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using Husky.Game.Shared.Model;
+using Newtonsoft.Json;
 
 namespace LostInSpace.WebApp.Shared.View
 {
@@ -9,5 +10,9 @@ namespace LostInSpace.WebApp.Shared.View
 		public float Rotation { get; set; }
 		public Vector2 Velocity { get; set; }
 		public int LifetimeRemaining { get; set; } = 20;
+		public int Damage { get; set; } = 20;
+
+		[JsonIgnore]
+		public bool IsDestroyed => LifetimeRemaining <= 0;
 	}
 }

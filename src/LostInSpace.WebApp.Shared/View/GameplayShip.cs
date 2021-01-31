@@ -12,9 +12,10 @@ namespace LostInSpace.WebApp.Shared.View
 		public float Rotation { get; set; }
 		public int Health { get; set; } = 100;
 
-		[JsonIgnore] public bool CanShoot => BeamsCooldownRemaining <= 0;
+		[JsonIgnore] public bool CanShoot => HasBeams && BeamsCooldownRemaining <= 0;
 		[JsonIgnore] public bool IsDestroyed => Health <= 0;
 		[JsonIgnore] public float HealthPercentage => (float)Health / HealthMax;
+		[JsonIgnore] public bool CanBarrage => HasBarrage && BarrageCooldownRemaining <= 0;
 
 		public string ShipType { get; set; } = "scout";
 		public int HealthMax { get; set; } = 100;
@@ -28,6 +29,13 @@ namespace LostInSpace.WebApp.Shared.View
 		public int BeamDamagePerTick { get; set; } = 5;
 		public int BeamThickness { get; set; } = 4;
 		public int BeamsCooldownRemaining { get; set; } = 10;
+
+		public bool HasBarrage { get; set; } = false;
+		public int BarrageCoodownWait {get; set;} = 30;
+		public int BarrageCooldownRemaining { get; set; } = 30;
+		public int BarrageProjectiles { get; set; } = 8;
+		public int BarrageDamagePerProjectile { get; set; } = 35;
+		public float BarrageRadius { get; set; } = 150.0f;
 
 		public ShipAction Action { get; set; }
 		public Vector2 ActionPosition { get; set; }

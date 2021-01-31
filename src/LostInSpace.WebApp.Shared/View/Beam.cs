@@ -10,5 +10,6 @@ namespace LostInSpace.WebApp.Shared.View
 		public Vector2 EndPosition { get; set; }
 		public int LifetimeRemaining { get; set; } = 3;
 		public int DamagePerTick { get; set; } = 5;
+		public int Thickness { get; set; } = 3;
 	}
 }

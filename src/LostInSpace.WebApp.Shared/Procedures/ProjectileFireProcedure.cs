@@ -11,7 +11,7 @@ namespace LostInSpace.WebApp.Shared.Procedures
 		public override void ApplyToView(NetworkedView view)
 		{
 			var owner = view.Lobby.World.Ships[Projectile.Owner];
-			owner.BeamsCooldownRemaining = owner.BeamsCooldownWait;
+			owner.BarrageCooldownRemaining = owner.BarrageCoodownWait;
 
 			view.Lobby.World.Projectiles.Add(ProjectileId, Projectile);
 		}
