@@ -21,6 +21,7 @@ namespace LostInSpace.WebApp.Shared.View
 		public int SupplyUnits { get; set; }
 
 		public int HealthMax { get; set; } = 100;
+		public float WeaponsRange { get; set; } = 300;
 		public int CooldownWait { get; set; } = 10;
 		public int MinDamage { get; set; } = 10;
 		public int MaxDamage { get; set; } = 10;
@@ -32,18 +33,9 @@ namespace LostInSpace.WebApp.Shared.View
 		public Vector2 ActionPosition { get; set; }
 		public LocalId ActionTarget { get; set; }
 
-		public bool IsInDockRange(GameplayShip other)
+		public bool IsInWeaponsRange(GameplayShip other)
 		{
-			const float dockRange = 16.0f;
-
-			return Vector2.Distance(Position, other.Position) <= dockRange;
-		}
-
-		public bool IsInCommsRange(GameplayShip other)
-		{
-			const float commsRange = 256.0f;
-
-			return Vector2.Distance(Position, other.Position) <= commsRange;
+			return (Vector2.Distance(Position, other.Position) - Radius - other.Radius) <= WeaponsRange;
 		}
 	}
 }

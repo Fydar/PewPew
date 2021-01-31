@@ -16,11 +16,39 @@ namespace LostInSpace.WebApp.Client.Pages
 		[Inject] protected NavigationManager NavigationManager { get; set; }
 		[Inject] protected IJSRuntime JsRuntime { get; set; }
 
+		public string YourName
+		{
+			get
+			{
+				return ClientService.View?.Lobby?.Players[ClientService.View.Client.ClientId].DisplayName ?? "";
+			}
+			set
+			{
+				UpdateDisplayName(value);
+			}
+		}
+
 		protected override Task OnInitializedAsync()
 		{
 			ClientService.OnProcedureApplied += OnProcedureApplied;
 
 			return Task.CompletedTask;
+		}
+
+		public void UpdateDisplayName(string newDisplayName)
+		{
+			_ = ClientService.SendCommandAsync(new LobbyUpdateDisplayNameCommand()
+			{
+				DisplayName = newDisplayName
+			});
+		}
+
+		public void JoinTeamButton(int teamId)
+		{
+			_ = ClientService.SendCommandAsync(new LobbyUpdateTeamCommand()
+			{
+				NewTeamId = teamId
+			});
 		}
 
 		public void LaunchGameButton(MouseEventArgs mouseEventArgs)

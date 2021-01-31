@@ -3,29 +3,90 @@
 
 @using HuskyNet.WebClient.Services;
 
-@if (ClientService.View?.Lobby != null)
-{
-	<div>
-		<h3>Players</h3>
-		@if (ClientService.View.Lobby != null)
-		{
-			@foreach (var player in ClientService.View.Lobby.Players)
-			{
-				@if (player.Key == ClientService.View.Client.ClientId)
-				{
-					<p><sub>this is you!</sub></p>
-				}
+<div class="page-insert">
 
-				<p>@player.Value.DisplayName (@player.Key)</p>
+	<div class="page-lobby">
+
+		@if (ClientService.View?.Lobby != null)
+		{
+			<h3>Players</h3>
+
+			<div class="row">
+				@for (int i = 0; i < 2; i++)
+				{
+					int teamId = i;
+
+					<div class="col-sm-6">
+
+						<h4>Team @(teamId + 1)</h4>
+
+						<button class="btn btn-primary" @onclick="() => JoinTeamButton(teamId)">Join Team @(teamId + 1)</button>
+
+						@if (ClientService.View.Lobby != null)
+						{
+							foreach (var player in ClientService.View.Lobby.Players)
+							{
+								if (player.Value.TeamId != teamId)
+								{
+									continue;
+								}
+
+								<div class="input-group">
+									@if (player.Key == ClientService.View.Client.ClientId)
+									{
+										<input class="form-control" @bind="YourName" @bind:event="oninput" />
+									}
+									else
+									{
+										<span class="input-group-text" id="basic-addon1">@player.Value.DisplayName</span>
+									}
+								</div>
+							}
+						}
+					</div>
+				}
+			</div>
+
+			<div style="height: 64px"></div>
+
+			<div class="row">
+				<button class="btn btn-primary" @onclick="LaunchGameButton">Launch Game</button>
+			</div>
+
+			<div style="height: 64px"></div>
+
+			<h3>Spectators</h3>
+
+			<div class="row">
+				<button class="btn btn-primary" @onclick="() => JoinTeamButton(-1)">Spectate</button>
+			</div>
+
+			@if (ClientService.View.Lobby != null)
+			{
+				foreach (var player in ClientService.View.Lobby.Players)
+				{
+					if (player.Value.TeamId != -1)
+					{
+						continue;
+					}
+
+					<div class="input-group">
+						@if (player.Key == ClientService.View.Client.ClientId)
+						{
+							<input class="form-control" @bind="YourName" @bind:event="oninput" />
+						}
+						else
+						{
+							<span class="input-group-text" id="basic-addon1">@player.Value.DisplayName</span>
+						}
+					</div>
+				}
 			}
 		}
+		else
+		{
+			<h1>Connecting...</h1>
+		}
+
 	</div>
-
-	<button class="btn btn-primary" @onclick="LaunchGameButton">Launch Game</button>
-}
-else
-{
-	<h1>Connecting...</h1>
-}
-
-
+</div>
