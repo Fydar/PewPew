@@ -18,10 +18,21 @@ namespace LostInSpace.WebApp.Client.Pages
 		[Inject] protected IJSRuntime JsRuntime { get; set; }
 
 
-		public NavigateInputMode InputMode { get; set; }
+		public NavigateInputMode InputMode
+		{
+			get
+			{
+				if (ClientService.View?.Lobby?.World.Ships.ContainsKey(ClientService.View.Client.ClientId) ?? false)
+				{
+					return NavigateInputMode.SetDestination;
+				}
+				else
+				{
+					return NavigateInputMode.None;
+				}
+			}
+		}
 		public LocalId? CurrentlySelected { get; set; }
-
-		private string InputDebug { get; set; }
 
 		public enum NavigateInputMode
 		{

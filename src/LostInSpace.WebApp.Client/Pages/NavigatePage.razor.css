@@ -26,19 +26,11 @@ body {
 			outline: 0;
 		}
 
-	.page-insert .page-statusarea {
-		border-radius: 8px;
-		padding: 16px;
-		background-color: #303030;
-		overflow: hidden;
-		display: block;
-	}
-
 .grid {
 	background-image: url('../img/grid4.png');
 	background-size: 256px;
-	height: 2048px;
-	width: 2048px;
+	height: 4096px;
+	width: 4096px;
 	position: absolute;
 }
 
