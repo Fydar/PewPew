@@ -81,7 +81,8 @@ namespace LostInSpace.WebApp.Server.Services
 
 				foreach (var shipKvp in world.Ships)
 				{
-					if (shipKvp.Key == projectile.Owner)
+					if (shipKvp.Key == projectile.Owner
+						|| shipKvp.Value.IsDestroyed)
 					{
 						continue;
 					}
@@ -122,6 +123,11 @@ namespace LostInSpace.WebApp.Server.Services
 			foreach (var shipKvp in world.Ships)
 			{
 				var ship = shipKvp.Value;
+
+				if (ship.IsDestroyed)
+				{
+					continue;
+				}
 
 				bool shouldMove = false;
 				var targetPosition = ship.Position;
@@ -177,6 +183,11 @@ namespace LostInSpace.WebApp.Server.Services
 						}
 
 						var otherShip = otherShipKvp.Value;
+
+						if (otherShip.IsDestroyed)
+						{
+							continue;
+						}
 
 						if (ship.IsInWeaponsRange(otherShip))
 						{
@@ -302,12 +313,25 @@ namespace LostInSpace.WebApp.Server.Services
 
 					foreach (var player in networkedView.Lobby.Players)
 					{
+						Vector2 minBound, maxBound;
+
+						if (player.Value.TeamId == 0)
+						{
+							minBound = new Vector2(128, 128);
+							maxBound = new Vector2(512.0f, 4778);
+						}
+						else
+						{
+							minBound = new Vector2(3584, 0.0f);
+							maxBound = new Vector2(4778, 4778);
+						}
+
 						var ship = new GameplayShip
 						{
 							Position = new Vector2(
-							random.Next(0, 512),
-							random.Next(0, 512)
-						),
+								random.Next((int)minBound.x, (int)maxBound.x),
+								random.Next((int)minBound.y, (int)maxBound.y)
+							),
 
 							SupplyUnits = random.Next(256, 512),
 							FuelUnits = random.Next(256, 512)
