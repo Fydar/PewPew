@@ -34,6 +34,10 @@ body {
 	position: absolute;
 }
 
+.grid * {
+	pointer-events: none;
+}
+
 .projectile {
 	position: absolute;
 	width: 2px;
@@ -72,6 +76,15 @@ body {
 		height: 100%;
 		transition: transform linear 0.4s;
 	}
+
+	.player.destroyed {
+		opacity: 0;
+	}
+
+		.player.capital .player-ship {
+			background-image: url('../img/spaceship.png');
+			background-size: 100% 100%;
+		}
 
 	.player.capital {
 		width: 150px;
@@ -194,8 +207,9 @@ body {
 	position: absolute;
 	right: 16px;
 	bottom: 16px;
-	width: 96px;
-	height: 96px;
+	width: 112px;
+	height: 112px;
+	color: #eee;
 	border-radius: 50%;
 	border: 4px solid #eee;
 	background-color: #424242;

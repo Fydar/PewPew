@@ -20,12 +20,14 @@ namespace LostInSpace.WebApp.Client.Pages
 		{
 			get
 			{
-				if (ClientService.View?.Client == null)
+				if (ClientService.View?.Client == null
+					|| ClientService.View?.Lobby == null)
 				{
 					return "";
 				}
 
-				return ClientService.View?.Lobby?.Players[ClientService.View.Client.ClientId].DisplayName ?? "";
+				ClientService.View.Lobby.Players.TryGetValue(ClientService.View.Client.ClientId, out var result);
+				return result?.DisplayName ?? "";
 			}
 			set
 			{
@@ -37,12 +39,14 @@ namespace LostInSpace.WebApp.Client.Pages
 		{
 			get
 			{
-				if (ClientService.View?.Client == null)
+				if (ClientService.View?.Client == null
+					|| ClientService.View?.Lobby == null)
 				{
 					return ShipTypes.Scout;
 				}
 
-				return ClientService.View?.Lobby?.Players[ClientService.View.Client.ClientId].ShipClass ?? ShipTypes.Scout;
+				ClientService.View.Lobby.Players.TryGetValue(ClientService.View.Client.ClientId, out var result);
+				return result.ShipClass ?? ShipTypes.Scout;
 			}
 			set
 			{
@@ -54,12 +58,14 @@ namespace LostInSpace.WebApp.Client.Pages
 		{
 			get
 			{
-				if (ClientService.View?.Client == null)
+				if (ClientService.View?.Client == null
+					|| ClientService.View?.Lobby == null)
 				{
 					return -1;
 				}
 
-				return ClientService.View?.Lobby?.Players[ClientService.View.Client.ClientId].TeamId ?? -1;
+				ClientService.View.Lobby.Players.TryGetValue(ClientService.View.Client.ClientId, out var result);
+				return result?.TeamId ?? -1;
 			}
 		}
 
