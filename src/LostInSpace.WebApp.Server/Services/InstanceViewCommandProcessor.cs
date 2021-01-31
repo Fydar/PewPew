@@ -57,6 +57,22 @@ namespace LostInSpace.WebApp.Server.Services
 
 			var world = networkedView.Lobby.World;
 
+
+			int teamAAlive = networkedView.Lobby.World.Ships.Where(s => !s.Value.IsDestroyed).Count(p => networkedView.Lobby.Players[p.Key].TeamId == 0);
+			int teamBAlive = networkedView.Lobby.World.Ships.Where(s => !s.Value.IsDestroyed).Count(p => networkedView.Lobby.Players[p.Key].TeamId == 1);
+
+			if (teamAAlive == 0
+				|| teamBAlive == 0)
+			{
+				yield return new ScopedNetworkedViewProcedure(
+					ProcedureScope.Broadcast,
+					new GameEndProcedure()
+					{
+					}
+				);
+				yield break;
+			}
+
 			yield return new ScopedNetworkedViewProcedure(
 				ProcedureScope.Broadcast,
 				new GameTickProcedure()
@@ -87,7 +103,8 @@ namespace LostInSpace.WebApp.Server.Services
 						continue;
 					}
 
-					var ship = shipKvp.Value;
+
+				   var ship = shipKvp.Value;
 
 					if (Vector2.Distance(projectile.Position, ship.Position) <= 16.0f)
 					{
@@ -317,13 +334,13 @@ namespace LostInSpace.WebApp.Server.Services
 
 						if (player.Value.TeamId == 0)
 						{
-							minBound = new Vector2(128, 128);
-							maxBound = new Vector2(512.0f, 4778);
+							minBound = new Vector2(512, 1920);
+							maxBound = new Vector2(1024, 2176);
 						}
 						else
 						{
-							minBound = new Vector2(3584, 0.0f);
-							maxBound = new Vector2(4778, 4778);
+							minBound = new Vector2(3072, 1920);
+							maxBound = new Vector2(3584, 2176);
 						}
 
 						var ship = new GameplayShip
