@@ -50,6 +50,19 @@ namespace LostInSpace.WebApp.Client.Pages
 			}
 		}
 
+		public int YourTeam
+		{
+			get
+			{
+				if (ClientService.View?.Client == null)
+				{
+					return -1;
+				}
+
+				return ClientService.View?.Lobby?.Players[ClientService.View.Client.ClientId].TeamId ?? -1;
+			}
+		}
+
 		protected override Task OnInitializedAsync()
 		{
 			ClientService.OnProcedureApplied += OnProcedureApplied;
