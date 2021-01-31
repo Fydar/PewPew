@@ -32,6 +32,20 @@ namespace LostInSpace.WebApp.Client.Pages
 				}
 			}
 		}
+
+		public int YourTeam
+		{
+			get
+			{
+				return GetTeamId(ClientService.View.Client.ClientId);
+			}
+		}
+
+		public int GetTeamId(LocalId localId)
+		{
+			return ClientService.View?.Lobby?.Players[localId].TeamId ?? -1;
+		}
+
 		public LocalId? CurrentlySelected { get; set; }
 
 		public enum NavigateInputMode
@@ -43,6 +57,12 @@ namespace LostInSpace.WebApp.Client.Pages
 		protected override Task OnInitializedAsync()
 		{
 			ClientService.OnProcedureApplied += OnProcedureApplied;
+
+			if (ClientService.View?.Lobby?.World == null)
+			{
+				NavigationManager.NavigateTo("/lobby");
+			}
+
 			return Task.CompletedTask;
 		}
 
@@ -56,7 +76,6 @@ namespace LostInSpace.WebApp.Client.Pages
 
 		public void GotoButtonClick(MouseEventArgs mouseEventArgs)
 		{
-			InputMode = NavigateInputMode.SetDestination;
 		}
 
 		public void MapOnClick(MouseEventArgs mouseEventArgs)
@@ -91,6 +110,11 @@ namespace LostInSpace.WebApp.Client.Pages
 		public void OnProcedureApplied(NetworkedViewProcedure networkedViewProcedure)
 		{
 			_ = InvokeAsync(StateHasChanged);
+
+			if (ClientService.View?.Lobby?.World == null)
+			{
+				NavigationManager.NavigateTo("/lobby");
+			}
 		}
 	}
 }
