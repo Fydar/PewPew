@@ -9,7 +9,7 @@
 
 	display: grid;
 	grid-template-rows: auto;
-	grid-template-areas: 'topbar' 'pagebody';
+	grid-template-areas: 'pagebody';
 }
 
 	.page .navbar {
