@@ -33,8 +33,6 @@ Fast-moving with rapid-fire lasers.
 
 > ***Tip:** Use your speed to take a few hits and safely retreat to the back lines until your needed again.*
 
-----
-
 ## Gunship
 
 Long-ranged, slow-moving ship with a high-damage torpedo ability.
@@ -57,8 +55,6 @@ Long-ranged, slow-moving ship with a high-damage torpedo ability.
 
 > ***Tip:** Wait for reinforcements before engaging a **capital ship**.*
 
-----
-
 ## Battleship
 
 Durable, slow-moving with close-range lasers.
@@ -78,8 +74,6 @@ Durable, slow-moving with close-range lasers.
 ![Health](./img/health-battleship.svg)
 
 > ***Tip:** Charge the enemy to absorbe fire for your **gunships** and **scouts**.*
-
-----
 
 ## Capital
 
@@ -102,9 +96,6 @@ Durable ship with game-changing firepower in bursts
 > ***Tip:** Use the barrage ability button at the bottom-right of your screen to deliver a stream of high-damage torpedoes.*
 
 > ***Tip:** Use your presense to control the flow of the battle.*
-
-
-----
 
 ## Installation
 
