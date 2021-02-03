@@ -1,14 +1,14 @@
 ﻿using Husky.Game.Shared.Model;
-using HuskyNet.Instance.Server.Services;
 using LostInSpace.WebApp.Server.Services;
 using LostInSpace.WebApp.Shared.Services.Network;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;
 using System;
 using System.Collections.Generic;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace LostInSpace.WebApp.Server.Controllers
 {
@@ -16,16 +16,21 @@ namespace LostInSpace.WebApp.Server.Controllers
 	[Route("api/[controller]")]
 	public class GameController : ControllerBase
 	{
-		private readonly ILogger<GameController> logger;
-		private readonly InstanceManagerService instanceManagerService;
+		private readonly ILogger logger;
+		private readonly ConnectionManagerService connectionManagerService;
+		public ServerFrontend serverFrontend;
 
-		public GameController(ILogger<GameController> logger, InstanceManagerService instanceManagerService)
+		public GameController(
+			ILogger<GameController> logger,
+			ConnectionManagerService connectionManagerService)
 		{
 			this.logger = logger;
-			this.instanceManagerService = instanceManagerService;
+			this.connectionManagerService = connectionManagerService;
 		}
 
 		[HttpGet]
+		[ProducesResponseType(StatusCodes.Status101SwitchingProtocols)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task Get()
 		{
 			var context = ControllerContext.HttpContext;
@@ -36,28 +41,26 @@ namespace LostInSpace.WebApp.Server.Controllers
 				return;
 			}
 
-			var ct = context.RequestAborted;
-			var currentSocket = await context.WebSockets.AcceptWebSocketAsync();
-			string socketId = Guid.NewGuid().ToString();
+			var cancellationToken = context.RequestAborted;
+			using var currentSocket = await context.WebSockets.AcceptWebSocketAsync();
 
 			var socketChannel = new WebSocketChannel();
 
 			socketChannel.Logging.OnComplete += log =>
 			{
-				// LogContext.PushProperty("Name", log.Name);
 				var disposables = new List<IDisposable>
 				{
-					LogContext.PushProperty("Elapsed", log.ElapsedTime)
+					LogContext.PushProperty("Elapsed", log.ElapsedTime),
+					LogContext.PushProperty("Result", log.Result)
 				};
 				foreach (var property in log.Properties)
 				{
 					disposables.Add(LogContext.PushProperty(property.Key, property.Value));
 				}
-				disposables.Add(LogContext.PushProperty("Result", log.Result));
 
-				if (log.Level > Shared.Services.Network.LogLevel.Debug)
+				if (log.Level >= Shared.Services.Network.LogLevel.Debug)
 				{
-					logger.Log(ConvertToLogLevel(log.Level), log.Exception, "MessageLog");
+					logger.Log((LogLevel)(int)log.Level, log.Exception, "MessageLog");
 				}
 
 				foreach (var disposable in disposables)
@@ -66,78 +69,28 @@ namespace LostInSpace.WebApp.Server.Controllers
 				}
 			};
 
-			var connection = new GameClientConnection(LocalId.NewId(), socketChannel);
+			socketChannel.UseWebSocket(currentSocket);
+			var clientConnection = new GameClientConnection(LocalId.NewId(), socketChannel)
+			{
+				CommandProcessor = serverFrontend
+			};
+
+			connectionManagerService.Connections.AcceptNewClientConnection(clientConnection);
+
+			logger.Log(LogLevel.Information, "Accepted client WebSocket connection");
 
 			try
 			{
-				socketChannel.UseWebSocket(currentSocket);
-				instanceManagerService.Worker.Portal.AcceptNewClientConnection(connection);
-
-				logger.Log(Microsoft.Extensions.Logging.LogLevel.Information, "Accepting client WebSocket connection");
-				socketChannel.StartListening();
-
-				while (true)
-				{
-					if (ct.IsCancellationRequested
-						|| (socketChannel.WebSocket.State != WebSocketState.Open
-						 && socketChannel.WebSocket.State != WebSocketState.Connecting))
-					{
-						break;
-					}
-					await Task.Delay(50);
-				}
+				await socketChannel.ListenAsync(cancellationToken);
 			}
 			catch (Exception exception)
 			{
 				logger.LogError(exception, "Client connection encountered an exception");
 			}
-			finally
-			{
-				instanceManagerService.Worker.Portal.RemoveClientConnection(connection);
 
-				if (socketChannel.WebSocket.State != WebSocketState.Open
-					 && socketChannel.WebSocket.State != WebSocketState.Connecting)
-				{
-					try
-					{
-						await currentSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", ct);
-					}
-					catch (Exception closeException)
-					{
-						logger.LogWarning(closeException, "Client connection encountered an exception whilst trying to close.");
-					}
-				}
+			logger.Log(LogLevel.Information, "Closed client WebSocket connection");
 
-				currentSocket.Dispose();
-			}
-		}
-
-		private static Microsoft.Extensions.Logging.LogLevel ConvertToLogLevel(Shared.Services.Network.LogLevel logLevel)
-		{
-			switch (logLevel)
-			{
-				case Shared.Services.Network.LogLevel.Trace:
-					return Microsoft.Extensions.Logging.LogLevel.Trace;
-
-				case Shared.Services.Network.LogLevel.Debug:
-					return Microsoft.Extensions.Logging.LogLevel.Debug;
-
-				case Shared.Services.Network.LogLevel.Information:
-					return Microsoft.Extensions.Logging.LogLevel.Information;
-
-				case Shared.Services.Network.LogLevel.Warning:
-					return Microsoft.Extensions.Logging.LogLevel.Warning;
-
-				case Shared.Services.Network.LogLevel.Error:
-					return Microsoft.Extensions.Logging.LogLevel.Error;
-
-				case Shared.Services.Network.LogLevel.Critical:
-					return Microsoft.Extensions.Logging.LogLevel.Critical;
-
-				default:
-				case Shared.Services.Network.LogLevel.None:
-					return Microsoft.Extensions.Logging.LogLevel.None;
-			}
+			connectionManagerService.Connections.RemoveClientConnection(clientConnection);
 		}
 	}
 }

@@ -3,10 +3,12 @@ using LostInSpace.WebApp.Shared.Commands;
 using LostInSpace.WebApp.Shared.Procedures;
 using LostInSpace.WebApp.Shared.Services.Network;
 using LostInSpace.WebApp.Shared.View;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HuskyNet.WebClient.Services
@@ -21,66 +23,17 @@ namespace HuskyNet.WebClient.Services
 
 		public event Action<NetworkedViewProcedure> OnProcedureApplied;
 
-		public ClientService(ILogger<ClientService> logger)
+		public ClientService(ILogger<ClientService> logger, NavigationManager navigationManager)
 		{
 			this.logger = logger;
-
 			serializer = new JsonSerializer();
 
-			//_ = ConnectAsync("wss://ggj2021.anthonymarmont.com");
-			_ = ConnectAsync("ws://localhost:5000");
-		}
+			string url = navigationManager.BaseUri
+				.Replace("http://", "ws://")
+				.Replace("https://", "wss://")
+				.TrimEnd('/');
 
-		public async Task ConnectAsync(string serverUrl)
-		{
-			try
-			{
-				var target = new Uri($"{serverUrl}/api/game");
-
-				var clientView = new ClientNetworkedView();
-
-				// Client
-				serverConnection = new WebSocketChannel();
-				serverConnection.Logging.OnComplete += log =>
-				{
-					if (log.Level >= LostInSpace.WebApp.Shared.Services.Network.LogLevel.Information)
-					{
-						logger.LogInformation(log.ToString());
-					}
-				};
-				serverConnection.OnReceive += message =>
-				{
-					try
-					{
-						var procedure = DeserializeProcedure(message.Content);
-						procedure.ApplyToView(clientView);
-						OnProcedureApplied?.Invoke(procedure);
-					}
-					catch (Exception exception)
-					{
-						Console.WriteLine(exception);
-					}
-				};
-
-				logger.LogInformation($"Connecting to {target}");
-				await serverConnection.Connect(target);
-
-				if (serverConnection.IsConnected)
-				{
-					logger.LogInformation($"Connected to {target}");
-				}
-				else
-				{
-					logger.LogInformation($"Failed to connect to {target}");
-				}
-				OnProcedureApplied?.Invoke(null);
-
-				View = clientView;
-			}
-			catch (Exception exception)
-			{
-				Console.WriteLine(exception);
-			}
+			_ = RunAsync($"{url}/api/game");
 		}
 
 		public Task SendCommandAsync(ClientCommand command)
@@ -88,6 +41,60 @@ namespace HuskyNet.WebClient.Services
 			byte[] data = SerializeCommand(command);
 
 			return serverConnection.SendAsync(data);
+		}
+
+		private async Task RunAsync(string serverUrl, CancellationToken cancellationToken = default)
+		{
+			var target = new Uri(serverUrl);
+
+			View = new ClientNetworkedView();
+
+			// Client
+			serverConnection = new WebSocketChannel();
+			serverConnection.Logging.OnComplete += log =>
+			{
+				if (log.Level >= LostInSpace.WebApp.Shared.Services.Network.LogLevel.Information)
+				{
+					logger.LogInformation(log.ToString());
+				}
+			};
+			serverConnection.OnReceive += message =>
+			{
+				try
+				{
+					var procedure = DeserializeProcedure(message.Content);
+					procedure.ApplyToView(View);
+					OnProcedureApplied?.Invoke(procedure);
+				}
+				catch (Exception exception)
+				{
+					logger.LogError(exception, "Error whilst applying procedure to view");
+				}
+			};
+
+			logger.LogInformation($"Connecting to {target}");
+
+			try
+			{
+				await serverConnection.Connect(target, cancellationToken);
+			}
+			catch (Exception exception)
+			{
+				logger.LogError(exception, "Error whilst connecting");
+			}
+
+			if (serverConnection.IsConnected)
+			{
+				logger.LogInformation($"Connected to {target}");
+
+				_ = serverConnection.ListenAsync(cancellationToken);
+			}
+			else
+			{
+				logger.LogInformation($"Failed to connect to {target}");
+			}
+
+			OnProcedureApplied?.Invoke(null);
 		}
 
 		private byte[] SerializeCommand(ClientCommand command)

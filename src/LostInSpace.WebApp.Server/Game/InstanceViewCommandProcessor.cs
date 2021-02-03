@@ -1,4 +1,5 @@
 ﻿using Husky.Game.Shared.Model;
+using LostInSpace.WebApp.Server.Services;
 using LostInSpace.WebApp.Shared.Commands;
 using LostInSpace.WebApp.Shared.Procedures;
 using LostInSpace.WebApp.Shared.View;
@@ -6,31 +7,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LostInSpace.WebApp.Server.Services
+namespace LostInSpace.WebApp.Server.Game
 {
 	public class InstanceViewCommandProcessor
 	{
-		private readonly NetworkedView networkedView;
+		private readonly ServerNetworkedView view;
 		private readonly Random random;
 
-		public InstanceViewCommandProcessor(NetworkedView clientView)
+		public InstanceViewCommandProcessor(ServerNetworkedView view)
 		{
-			networkedView = clientView;
+			this.view = view;
 
 			random = new Random();
 		}
 
 		public IEnumerable<ScopedNetworkedViewProcedure> HandleGameTick()
 		{
-			if (networkedView.Lobby.World?.Ships == null)
+			if (view.Lobby.World?.Ships == null)
 			{
 				yield break;
 			}
 
-			var world = networkedView.Lobby.World;
+			var world = view.Lobby.World;
 
-			int teamAAlive = networkedView.Lobby.World.Ships.Where(s => !s.Value.IsDestroyed).Count(p => networkedView.Lobby.Players[p.Key].TeamId == 0);
-			int teamBAlive = networkedView.Lobby.World.Ships.Where(s => !s.Value.IsDestroyed).Count(p => networkedView.Lobby.Players[p.Key].TeamId == 1);
+			int teamAAlive = view.Lobby.World.Ships.Where(s => !s.Value.IsDestroyed).Count(p => view.Lobby.Players[p.Key].TeamId == 0);
+			int teamBAlive = view.Lobby.World.Ships.Where(s => !s.Value.IsDestroyed).Count(p => view.Lobby.Players[p.Key].TeamId == 1);
 
 			if (teamAAlive == 0
 				|| teamBAlive == 0)
@@ -73,9 +74,9 @@ namespace LostInSpace.WebApp.Server.Services
 					}
 
 					// Ignore teammates
-					if (networkedView.Lobby.Players.TryGetValue(projectile.Owner, out var thisOwnership))
+					if (view.Lobby.Players.TryGetValue(projectile.Owner, out var thisOwnership))
 					{
-						if (networkedView.Lobby.Players.TryGetValue(shipKvp.Key, out var thisPlayer))
+						if (view.Lobby.Players.TryGetValue(shipKvp.Key, out var thisPlayer))
 						{
 							if (thisPlayer.TeamId == thisOwnership.TeamId)
 							{
@@ -208,9 +209,9 @@ namespace LostInSpace.WebApp.Server.Services
 						}
 
 						// Ignore teammates
-						if (networkedView.Lobby.Players.TryGetValue(otherShipKvp.Key, out var otherPlayer))
+						if (view.Lobby.Players.TryGetValue(otherShipKvp.Key, out var otherPlayer))
 						{
-							if (networkedView.Lobby.Players.TryGetValue(shipKvp.Key, out var thisPlayer))
+							if (view.Lobby.Players.TryGetValue(shipKvp.Key, out var thisPlayer))
 							{
 								if (thisPlayer.TeamId == otherPlayer.TeamId)
 								{
@@ -276,16 +277,16 @@ namespace LostInSpace.WebApp.Server.Services
 			);
 			yield return new ScopedNetworkedViewProcedure(
 				ProcedureScope.Reply,
-				new ReplicateViewProcedure()
+				new LobbyReplicateProcedure()
 				{
-					Lobby = networkedView.Lobby
+					Lobby = view.Lobby
 				}
 			);
 
 			int playerTeam;
 
-			int teamACount = networkedView.Lobby.Players.Count(p => p.Value.TeamId == 0);
-			int teamBCount = networkedView.Lobby.Players.Count(p => p.Value.TeamId == 1);
+			int teamACount = view.Lobby.Players.Count(p => p.Value.TeamId == 0);
+			int teamBCount = view.Lobby.Players.Count(p => p.Value.TeamId == 1);
 
 			if (teamACount <= teamBCount)
 			{
@@ -303,7 +304,7 @@ namespace LostInSpace.WebApp.Server.Services
 					Identifier = connection.Identifier,
 					Profile = new LobbyPublicPlayerProfile()
 					{
-						DisplayName = RandomName.Get(),
+						DisplayName = RandomName.Generate(),
 						TeamId = playerTeam
 					}
 				}
@@ -335,11 +336,32 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			switch (clientCommand)
 			{
-				case LaunchGameCommand command:
+				case LobbyLeaveCommand:
+				{
+					yield return new ScopedNetworkedViewProcedure(
+						ProcedureScope.Broadcast,
+						new ShipDamageProcedure()
+						{
+							Source = connection.Identifier,
+							Target = connection.Identifier,
+							Damage = 10000
+						}
+					);
+
+					yield return new ScopedNetworkedViewProcedure(
+						ProcedureScope.Broadcast,
+						new LobbyPlayerLeaveProcedure()
+						{
+							Identifier = connection.Identifier
+						}
+					);
+					break;
+				}
+				case LaunchGameCommand:
 				{
 					var world = new GameplayWorld();
 
-					foreach (var player in networkedView.Lobby.Players)
+					foreach (var player in view.Lobby.Players)
 					{
 						Vector2 minBound, maxBound;
 
@@ -419,8 +441,8 @@ namespace LostInSpace.WebApp.Server.Services
 							ship.Radius = 40;
 							ship.MovementSpeed = 5.5f;
 
-							ship.HealthMax = 260;
-							ship.Health = 260;
+							ship.HealthMax = 300;
+							ship.Health = 300;
 
 							ship.BeamDamagePerTick = 10;
 							ship.BeamThickness = 2;
@@ -464,7 +486,7 @@ namespace LostInSpace.WebApp.Server.Services
 
 				case UseAbilityCommand command:
 				{
-					var ship = networkedView.Lobby.World.Ships[connection.Identifier];
+					var ship = view.Lobby.World.Ships[connection.Identifier];
 
 					for (int i = 0; i < ship.BarrageProjectiles; i++)
 					{

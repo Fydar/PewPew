@@ -23,9 +23,9 @@
 
 		<div class="grid" id="zoomcanvasid" @onclick="MapOnClick" @onmouseup="MapOnMouseUp" oncontextmenu="return false;">
 
-			@if (ClientService.View?.Lobby?.World?.Projectiles != null)
+			@if (Client.View?.Lobby?.World?.Projectiles != null)
 			{
-				@foreach (var projectileKvp in ClientService.View.Lobby.World.Projectiles)
+				@foreach (var projectileKvp in Client.View.Lobby.World.Projectiles)
 				{
 					var projectile = projectileKvp.Value;
 
@@ -34,10 +34,10 @@
 				}
 			}
 
-			@if (ClientService.View?.Lobby?.World?.Beams != null)
+			@if (Client.View?.Lobby?.World?.Beams != null)
 			{
 				<svg class="beams">
-					@foreach (var beamKvp in ClientService.View.Lobby.World.Beams)
+					@foreach (var beamKvp in Client.View.Lobby.World.Beams)
 					{
 						var beam = beamKvp.Value;
 
@@ -63,15 +63,15 @@
 				</svg>
 			}
 
-			@if (ClientService.View?.Lobby?.World?.Ships != null)
+			@if (Client.View?.Lobby?.World?.Ships != null)
 			{
-				@foreach (var shipKvp in ClientService.View.Lobby.World.Ships)
+				@foreach (var shipKvp in Client.View.Lobby.World.Ships)
 				{
 					var ship = shipKvp.Value;
 
 					LostInSpace.WebApp.Shared.View.LobbyPublicPlayerProfile owner = null;
 
-					ClientService.View.Lobby?.Players?.TryGetValue(shipKvp.Key, out owner);
+					Client.View.Lobby?.Players?.TryGetValue(shipKvp.Key, out owner);
 
 					<div class="player @ship.ShipType team-@(owner?.TeamId ?? -1) @(ship.IsDestroyed ? "destroyed" : "")" style="top: 0; left: 0; transform: translate(@(ship.Position.x)px, @(ship.Position.y)px)">
 
@@ -95,7 +95,7 @@
 								<label>Disconnected...</label>
 							}
 
-							@if (shipKvp.Key == ClientService.View?.Client?.ClientId)
+							@if (shipKvp.Key == Client.View?.Client?.ClientId)
 							{
 								float range = ship.BeamsRange + ship.Radius;
 
@@ -110,7 +110,7 @@
 
 		@{
 			LostInSpace.WebApp.Shared.View.GameplayShip playerShip = null;
-			ClientService.View?.Lobby?.World?.Ships.TryGetValue(ClientService.View.Client.ClientId, out playerShip);
+			Client.View?.Lobby?.World?.Ships.TryGetValue(Client.View.Client.ClientId, out playerShip);
 		}
 
 		@if (playerShip != null && playerShip.HasBarrage)

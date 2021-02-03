@@ -1,4 +1,4 @@
-﻿namespace LostInSpace.WebApp.Server.Services
+﻿namespace LostInSpace.WebApp.Server.Game
 {
 	public enum ProcedureScope
 	{

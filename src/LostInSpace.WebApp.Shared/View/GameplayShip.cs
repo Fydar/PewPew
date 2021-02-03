@@ -31,7 +31,7 @@ namespace LostInSpace.WebApp.Shared.View
 		public int BeamsCooldownRemaining { get; set; } = 10;
 
 		public bool HasBarrage { get; set; } = false;
-		public int BarrageCoodownWait {get; set;} = 30;
+		public int BarrageCoodownWait { get; set; } = 30;
 		public int BarrageCooldownRemaining { get; set; } = 30;
 		public int BarrageProjectiles { get; set; } = 8;
 		public int BarrageDamagePerProjectile { get; set; } = 35;

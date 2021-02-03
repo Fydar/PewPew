@@ -1,0 +1,63 @@
+﻿@page "/"
+
+@using HuskyNet.WebClient.Services;
+
+<div class="container">
+	<div class="row">
+		<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+			<div class="card card-signin my-5">
+				<div class="card-body">
+
+					<h5 class="card-title text-center">Pew Pew</h5>
+
+					<div class="form-label-group">
+						<input @bind="DirectJoinLobbyKey" type="text" class="form-control" required>
+						<button @onclick="DirectJoinLobbyButton" class="btn btn-primary">Join Lobby</button>
+					</div>
+
+					<button @onclick="CreateLobbyButton" class="btn btn-primary">Create Lobby</button>
+
+					<table class="table">
+
+						@if (Client.View.Lobbies != null)
+						{
+							<thead>
+								<tr>
+									<td>Name</td>
+									<td>Players</td>
+								</tr>
+							</thead>
+							<tbody>
+								@if (Client?.View?.Lobbies != null
+								   && Client.View.Lobbies.Count > 0)
+								{
+									@foreach (var lobby in Client.View.Lobbies)
+									{
+										<tr>
+											<td>
+												@lobby.Name
+											</td>
+											<td>
+												@(lobby.CurrentPlayers)/@(lobby.MaxPlayers)
+											</td>
+										</tr>
+									}
+								}
+								else
+								{
+									<tr>
+										<td colspan="2">
+											<sub>There are current no lobbies.</sub>
+										</td>
+									</tr>
+								}
+							</tbody>
+						}
+
+					</table>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

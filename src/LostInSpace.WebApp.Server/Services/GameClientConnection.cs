@@ -6,12 +6,13 @@ namespace LostInSpace.WebApp.Server.Services
 	public class GameClientConnection
 	{
 		public LocalId Identifier { get; }
-		public INetworkChannel Connection { get; }
+		public INetworkChannel Channel { get; }
+		public ICommandProcessor CommandProcessor { get; set; }
 
-		public GameClientConnection(LocalId identifier, INetworkChannel connection)
+		public GameClientConnection(LocalId identifier, INetworkChannel channel)
 		{
 			Identifier = identifier;
-			Connection = connection;
+			Channel = channel;
 		}
 	}
 }
