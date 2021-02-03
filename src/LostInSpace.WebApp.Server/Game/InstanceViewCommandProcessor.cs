@@ -575,45 +575,6 @@ namespace LostInSpace.WebApp.Server.Game
 					);
 					break;
 				}
-
-				case RepairBeginCommand command:
-				{
-					yield return new ScopedNetworkedViewProcedure(
-						ProcedureScope.Broadcast,
-						new RepairBeginProcedure()
-						{
-							RepairFrom = connection.Identifier,
-							RepairTo = command.Target
-						}
-					);
-					break;
-				}
-
-				case RepairStopCommand command:
-				{
-					yield return new ScopedNetworkedViewProcedure(
-						ProcedureScope.Broadcast,
-						new RepairEndProcedure()
-						{
-							RepairFrom = connection.Identifier,
-							RepairTo = command.Target,
-						}
-					);
-					break;
-				}
-
-				case GiveResourcesCommand command:
-				{
-					yield return new ScopedNetworkedViewProcedure(
-						ProcedureScope.Broadcast,
-						new RepairEndProcedure()
-						{
-							RepairFrom = connection.Identifier,
-							RepairTo = command.GiveTo,
-						}
-					);
-					break;
-				}
 			}
 		}
 	}
