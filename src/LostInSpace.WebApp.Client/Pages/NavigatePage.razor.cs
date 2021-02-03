@@ -13,7 +13,7 @@ namespace LostInSpace.WebApp.Client.Pages
 {
 	public partial class NavigatePage : ComponentBase, IDisposable
 	{
-		[Inject] protected ClientService ClientService { get; set; }
+		[Inject] protected ClientService Client { get; set; }
 		[Inject] protected NavigationManager NavigationManager { get; set; }
 		[Inject] protected IJSRuntime JsRuntime { get; set; }
 
@@ -21,12 +21,12 @@ namespace LostInSpace.WebApp.Client.Pages
 		{
 			get
 			{
-				if (ClientService.View?.Client == null)
+				if (Client.View?.Client == null)
 				{
 					return NavigateInputMode.None;
 				}
 
-				if (ClientService.View?.Lobby?.World?.Ships.ContainsKey(ClientService.View.Client.ClientId) ?? false)
+				if (Client.View?.Lobby?.World?.Ships.ContainsKey(Client.View.Client.ClientId) ?? false)
 				{
 					if (UseAbility)
 					{
@@ -47,13 +47,13 @@ namespace LostInSpace.WebApp.Client.Pages
 		{
 			get
 			{
-				return GetTeamId(ClientService.View.Client.ClientId);
+				return GetTeamId(Client.View.Client.ClientId);
 			}
 		}
 
 		public int GetTeamId(LocalId localId)
 		{
-			return ClientService.View?.Lobby?.Players[localId].TeamId ?? -1;
+			return Client.View?.Lobby?.Players[localId].TeamId ?? -1;
 		}
 
 		public LocalId? CurrentlySelected { get; set; }
@@ -62,13 +62,13 @@ namespace LostInSpace.WebApp.Client.Pages
 		{
 			get
 			{
-				if (ClientService.View?.Client == null
-					|| ClientService.View?.Lobby?.World == null)
+				if (Client.View?.Client == null
+					|| Client.View?.Lobby?.World == null)
 				{
 					return null;
 				}
 
-				ClientService.View.Lobby.World.Ships.TryGetValue(ClientService.View.Client.ClientId, out var result);
+				Client.View.Lobby.World.Ships.TryGetValue(Client.View.Client.ClientId, out var result);
 				return result;
 			}
 		}
@@ -82,9 +82,9 @@ namespace LostInSpace.WebApp.Client.Pages
 
 		protected override Task OnInitializedAsync()
 		{
-			ClientService.OnProcedureApplied += OnProcedureApplied;
+			Client.OnProcedureApplied += OnProcedureApplied;
 
-			if (ClientService.View?.Lobby?.World == null)
+			if (Client.View?.Lobby?.World == null)
 			{
 				NavigationManager.NavigateTo("/lobby");
 			}
@@ -121,7 +121,7 @@ namespace LostInSpace.WebApp.Client.Pages
 			{
 				if (mouseEventArgs.Button == 2)
 				{
-					_ = ClientService.SendCommandAsync(new SetDestinationPositionCommand()
+					_ = Client.SendCommandAsync(new SetDestinationPositionCommand()
 					{
 						Position = new Vector2((float)mouseEventArgs.OffsetX, (float)mouseEventArgs.OffsetY)
 					});
@@ -131,7 +131,7 @@ namespace LostInSpace.WebApp.Client.Pages
 			{
 				if (mouseEventArgs.Button != 1)
 				{
-					_ = ClientService.SendCommandAsync(new UseAbilityCommand()
+					_ = Client.SendCommandAsync(new UseAbilityCommand()
 					{
 						TargetLocation = new Vector2((float)mouseEventArgs.OffsetX, (float)mouseEventArgs.OffsetY)
 					});
@@ -147,7 +147,7 @@ namespace LostInSpace.WebApp.Client.Pages
 
 		public void Dispose()
 		{
-			ClientService.OnProcedureApplied -= OnProcedureApplied;
+			Client.OnProcedureApplied -= OnProcedureApplied;
 		}
 
 		public void OnProcedureApplied(NetworkedViewProcedure networkedViewProcedure)
@@ -157,7 +157,7 @@ namespace LostInSpace.WebApp.Client.Pages
 				_ = InvokeAsync(StateHasChanged);
 			}
 
-			if (ClientService.View?.Lobby?.World == null)
+			if (Client.View?.Lobby?.World == null)
 			{
 				NavigationManager.NavigateTo("/lobby");
 			}

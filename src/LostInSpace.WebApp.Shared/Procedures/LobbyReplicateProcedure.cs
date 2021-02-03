@@ -2,7 +2,7 @@
 
 namespace LostInSpace.WebApp.Shared.Procedures
 {
-	public class ReplicateViewProcedure : NetworkedViewProcedure
+	public class LobbyReplicateProcedure : NetworkedViewProcedure
 	{
 		public LobbyView Lobby { get; set; }
 

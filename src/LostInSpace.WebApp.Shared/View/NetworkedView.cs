@@ -1,4 +1,7 @@
-﻿namespace LostInSpace.WebApp.Shared.View
+﻿using Husky.Game.Shared.Model;
+using System.Collections.Generic;
+
+namespace LostInSpace.WebApp.Shared.View
 {
 	/// <summary>
 	/// A representation of a networked view throughout.
@@ -20,6 +23,8 @@
 		/// Client-specific functionality as-informed to this view by the server.
 		/// </summary>
 		public ClientSpecific Client { get; set; }
+
+		public List<LobbyStatus> Lobbies { get; set; }
 	}
 
 	/// <summary>

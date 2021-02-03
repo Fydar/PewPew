@@ -1,7 +1,7 @@
 ﻿using LostInSpace.WebApp.Shared.View;
 using System;
 
-namespace LostInSpace.WebApp.Server.Services
+namespace LostInSpace.WebApp.Server.Game
 {
 	public partial struct Mathf
 	{
@@ -30,12 +30,17 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			int len = values.Length;
 			if (len == 0)
+			{
 				return 0;
+			}
+
 			float m = values[0];
 			for (int i = 1; i < len; i++)
 			{
 				if (values[i] < m)
+				{
 					m = values[i];
+				}
 			}
 			return m;
 		}
@@ -45,12 +50,17 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			int len = values.Length;
 			if (len == 0)
+			{
 				return 0;
+			}
+
 			int m = values[0];
 			for (int i = 1; i < len; i++)
 			{
 				if (values[i] < m)
+				{
 					m = values[i];
+				}
 			}
 			return m;
 		}
@@ -60,12 +70,17 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			int len = values.Length;
 			if (len == 0)
+			{
 				return 0;
+			}
+
 			float m = values[0];
 			for (int i = 1; i < len; i++)
 			{
 				if (values[i] > m)
+				{
 					m = values[i];
+				}
 			}
 			return m;
 		}
@@ -75,12 +90,17 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			int len = values.Length;
 			if (len == 0)
+			{
 				return 0;
+			}
+
 			int m = values[0];
 			for (int i = 1; i < len; i++)
 			{
 				if (values[i] > m)
+				{
 					m = values[i];
+				}
 			}
 			return m;
 		}
@@ -111,9 +131,9 @@ namespace LostInSpace.WebApp.Server.Services
 
 		public const float PI = (float)Math.PI;
 
-		public const float Infinity = Single.PositiveInfinity;
+		public const float Infinity = float.PositiveInfinity;
 
-		public const float NegativeInfinity = Single.NegativeInfinity;
+		public const float NegativeInfinity = float.NegativeInfinity;
 
 		public const float Deg2Rad = PI * 2F / 360F;
 
@@ -122,29 +142,45 @@ namespace LostInSpace.WebApp.Server.Services
 		public static float Clamp(float value, float min, float max)
 		{
 			if (value < min)
+			{
 				value = min;
+			}
 			else if (value > max)
+			{
 				value = max;
+			}
+
 			return value;
 		}
 
 		public static int Clamp(int value, int min, int max)
 		{
 			if (value < min)
+			{
 				value = min;
+			}
 			else if (value > max)
+			{
 				value = max;
+			}
+
 			return value;
 		}
 
 		public static float Clamp01(float value)
 		{
 			if (value < 0F)
+			{
 				return 0F;
+			}
 			else if (value > 1F)
+			{
 				return 1F;
+			}
 			else
+			{
 				return value;
+			}
 		}
 
 		public static float Lerp(float a, float b, float t)
@@ -161,22 +197,31 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			float delta = Repeat((b - a), 360);
 			if (delta > 180)
+			{
 				delta -= 360;
+			}
+
 			return a + delta * Clamp01(t);
 		}
 
-		static public float MoveTowards(float current, float target, float maxDelta)
+		public static float MoveTowards(float current, float target, float maxDelta)
 		{
 			if (Mathf.Abs(target - current) <= maxDelta)
+			{
 				return target;
+			}
+
 			return current + Mathf.Sign(target - current) * maxDelta;
 		}
 
-		static public float MoveTowardsAngle(float current, float target, float maxDelta)
+		public static float MoveTowardsAngle(float current, float target, float maxDelta)
 		{
 			float deltaAngle = DeltaAngle(current, target);
 			if (-maxDelta < deltaAngle && deltaAngle < maxDelta)
+			{
 				return target;
+			}
+
 			target = current + deltaAngle;
 			return MoveTowards(current, target, maxDelta);
 		}
@@ -193,7 +238,9 @@ namespace LostInSpace.WebApp.Server.Services
 			bool negative = value < 0F;
 			float absval = Abs(value);
 			if (absval > absmax)
+			{
 				return negative ? -absval : absval;
+			}
 
 			float result = Pow(absval / absmax, gamma) * absmax;
 			return negative ? -result : result;
@@ -213,16 +260,23 @@ namespace LostInSpace.WebApp.Server.Services
 		public static float InverseLerp(float a, float b, float value)
 		{
 			if (a != b)
+			{
 				return Clamp01((value - a) / (b - a));
+			}
 			else
+			{
 				return 0.0f;
+			}
 		}
 
 		public static float DeltaAngle(float current, float target)
 		{
 			float delta = Mathf.Repeat((target - current), 360.0F);
 			if (delta > 180.0F)
+			{
 				delta -= 360.0F;
+			}
+
 			return delta;
 		}
 
@@ -275,11 +329,11 @@ namespace LostInSpace.WebApp.Server.Services
 			return true;
 		}
 
-		static internal long RandomToLong(System.Random r)
+		internal static long RandomToLong(System.Random r)
 		{
-			var buffer = new byte[8];
+			byte[] buffer = new byte[8];
 			r.NextBytes(buffer);
-			return (long)(System.BitConverter.ToUInt64(buffer, 0) & System.Int64.MaxValue);
+			return (long)(System.BitConverter.ToUInt64(buffer, 0) & long.MaxValue);
 		}
 	}
 }

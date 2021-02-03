@@ -1,5 +1,4 @@
-﻿@page "/"
-@page "/lobby"
+﻿@page "/lobby"
 
 @using HuskyNet.WebClient.Services;
 
@@ -9,7 +8,7 @@
 
 		<div style="height: 128px"></div>
 
-		@if (ClientService.View?.Lobby != null)
+		@if (Client.View?.Lobby != null)
 		{
 			<h3>Players</h3>
 
@@ -22,9 +21,9 @@
 
 						<h4>Team @(teamId + 1)</h4>
 
-						@if (ClientService.View.Lobby != null)
+						@if (Client.View.Lobby != null)
 						{
-							foreach (var player in ClientService.View.Lobby.Players)
+							foreach (var player in Client.View.Lobby.Players)
 							{
 								if (player.Value.TeamId != teamId)
 								{
@@ -32,7 +31,7 @@
 								}
 
 								<div class="input-group">
-									@if (player.Key == ClientService.View?.Client.ClientId)
+									@if (player.Key == Client.View?.Client.ClientId)
 									{
 										<input class="form-control col-sm-8" @bind="YourName" @bind:event="oninput" />
 										<select class="form-select col-sm-4" @bind="YourClass">
@@ -64,16 +63,16 @@
 			<div style="height: 64px"></div>
 
 			<div class="row">
-				<button class="btn btn-primary" @onclick="LaunchGameButton">Launch Game</button>
+				<button class="btn btn-primary" @onclick="this.LaunchGameButton">Launch Game</button>
 			</div>
 
 			<div style="height: 64px"></div>
 
 			<h3>Spectators</h3>
 
-			@if (ClientService.View.Lobby != null)
+			@if (Client.View.Lobby != null)
 			{
-				foreach (var player in ClientService.View.Lobby.Players)
+				foreach (var player in Client.View.Lobby.Players)
 				{
 					if (player.Value.TeamId != -1)
 					{
@@ -81,7 +80,7 @@
 					}
 
 					<div class="input-group">
-						@if (player.Key == ClientService.View.Client.ClientId)
+						@if (player.Key == Client.View.Client.ClientId)
 						{
 							<input class="form-control" @bind="YourName" @bind:event="oninput" />
 						}

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LostInSpace.WebApp.Server.Services
+namespace LostInSpace.WebApp.Server.Game
 {
 	public static class RandomName
 	{
@@ -13,6 +13,13 @@ namespace LostInSpace.WebApp.Server.Services
 			"Rabid",
 			"Ace",
 			"Furry",
+			"Alert",
+			"Black",
+			"Blue",
+			"Red",
+			"Pink",
+			"White",
+			"Cute"
 		};
 
 		private static readonly string[] animals = new string[]
@@ -24,7 +31,7 @@ namespace LostInSpace.WebApp.Server.Services
 			"Chicken"
 		};
 
-		public static string Get()
+		public static string Generate()
 		{
 			return $"{prefix[random.Next(0, prefix.Length)]} {animals[random.Next(0, animals.Length)]}";
 		}

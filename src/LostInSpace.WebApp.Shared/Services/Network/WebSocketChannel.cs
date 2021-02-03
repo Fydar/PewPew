@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text;
@@ -35,11 +36,6 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 			OnConnected?.Invoke();
 		}
 
-		public void StartListening()
-		{
-			_ = ListenWorkerAsync();
-		}
-
 		public async Task Connect(Uri uri, CancellationToken cancellationToken = default)
 		{
 			if (WebSocket != null)
@@ -69,15 +65,12 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 
 			connectLog.End(LogLevel.Information, "Successfully connected");
 
-			_ = ListenWorkerAsync();
-
 			IsConnected = true;
 		}
 
 		public async Task CloseAsync(CancellationToken cancellationToken = default)
 		{
 			var trace = Logging.Start("Closing connection");
-
 
 			try
 			{
@@ -114,30 +107,39 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 				.End(LogLevel.Debug, "Sent", null);
 		}
 
-		private async Task ListenWorkerAsync()
+		public async Task ListenAsync(CancellationToken cancellationToken = default)
 		{
 			while (true)
 			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					return;
+				}
+
 				NetworkLog trace = null;
 				WebSocketReceiveResult result;
-				var bufferSegment = new ArraySegment<byte>(new byte[8192]);
+
+				byte[] rentedBuffer = ArrayPool<byte>.Shared.Rent(8192);
+				var bufferSegment = new ArraySegment<byte>(rentedBuffer);
 				using var memoryStream = new MemoryStream();
 
 				try
 				{
 					do
 					{
-						if (WebSocket.State != WebSocketState.Open
-							&& WebSocket.State != WebSocketState.Connecting)
+						if (cancellationToken.IsCancellationRequested
+							|| (WebSocket.State != WebSocketState.Open
+							&& WebSocket.State != WebSocketState.Connecting))
 						{
 							return;
 						}
 
-						result = await WebSocket.ReceiveAsync(bufferSegment, CancellationToken.None);
+						result = await WebSocket.ReceiveAsync(bufferSegment, cancellationToken);
 						if (trace == null)
 						{
 							trace = Logging.Start($"Receiving");
 						}
+
 						memoryStream.Write(bufferSegment.Array, bufferSegment.Offset, result.Count);
 					}
 					while (!result.EndOfMessage);
@@ -151,6 +153,10 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 					trace.End(LogLevel.Error, "Exception thrown during listen", exception: exception);
 					return;
 				}
+				finally
+				{
+					ArrayPool<byte>.Shared.Return(rentedBuffer);
+				}
 
 				byte[] body = memoryStream.ToArray();
 				var asStream = new MemoryStream(body);
@@ -161,10 +167,7 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 						.PushProperty("Message", Encoding.UTF8.GetString(body))
 						.End(LogLevel.Debug, $"Recieved");
 
-					OnReceive?.Invoke(new NetworkChannelMessage()
-					{
-						Content = asStream
-					});
+					OnReceive?.Invoke(new NetworkChannelMessage(this, asStream));
 				}
 				else
 				{

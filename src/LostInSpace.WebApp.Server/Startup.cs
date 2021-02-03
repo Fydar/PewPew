@@ -1,5 +1,6 @@
 using HuskyNet.Instance.Server.Services;
 using LettuceEncrypt;
+using LostInSpace.WebApp.Server.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +25,8 @@ namespace LostInSpace.WebApp.Server
 		{
 			services.AddHealthChecks();
 
-			services.AddSingleton<InstanceManagerService>();
+			services.AddSingleton<ConnectionManagerService>();
+			services.AddSingleton<ServerPortal>();
 
 			services.AddControllers();
 

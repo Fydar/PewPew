@@ -1,7 +1,5 @@
 ﻿using Husky.Game.Shared.Model;
-using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace LostInSpace.WebApp.Shared.View
 {

@@ -13,7 +13,7 @@ namespace LostInSpace.WebApp.Shared.Procedures
 			var player = view.Lobby.Players[Identifier];
 
 			player.ShipClass = ShipClass;
-			
+
 			// Prevent multiple players from having capital ships
 			if (ShipClass == ShipTypes.Capital)
 			{

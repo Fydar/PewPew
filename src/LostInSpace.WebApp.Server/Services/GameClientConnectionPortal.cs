@@ -10,11 +10,11 @@ namespace LostInSpace.WebApp.Server.Services
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly List<GameClientConnection> connections;
 
-		public IReadOnlyList<GameClientConnection> Connections => connections;
-
 		public event Action<GameClientConnection> OnConnect;
 		public event Action<GameClientConnection> OnDisconnect;
 		public event Action<GameClientConnection, NetworkChannelMessage> OnMessageRecieved;
+
+		public IReadOnlyList<GameClientConnection> Connections => connections;
 
 		public GameClientConnectionPortal()
 		{
@@ -23,15 +23,9 @@ namespace LostInSpace.WebApp.Server.Services
 
 		public void AcceptNewClientConnection(GameClientConnection clientConnection)
 		{
-			void HandleOnMessageRecieved(NetworkChannelMessage message)
-			{
-				OnMessageRecieved?.Invoke(clientConnection, message);
-			}
-
 			connections.Add(clientConnection);
 			OnConnect?.Invoke(clientConnection);
-
-			clientConnection.Connection.OnReceive += HandleOnMessageRecieved;
+			clientConnection.Channel.OnReceive += HandleOnMessageRecieved;
 		}
 
 		public void RemoveClientConnection(GameClientConnection clientConnection)
@@ -39,7 +33,19 @@ namespace LostInSpace.WebApp.Server.Services
 			if (connections.Remove(clientConnection))
 			{
 				OnDisconnect?.Invoke(clientConnection);
-				// clientConnection.Connection.OnReceive -= HandleOnMessageRecieved;
+				clientConnection.Channel.OnReceive -= HandleOnMessageRecieved;
+			}
+		}
+
+		private void HandleOnMessageRecieved(NetworkChannelMessage message)
+		{
+			foreach (var connection in connections)
+			{
+				if (connection.Channel == message.Channel)
+				{
+					OnMessageRecieved?.Invoke(connection, message);
+					break;
+				}
 			}
 		}
 	}
