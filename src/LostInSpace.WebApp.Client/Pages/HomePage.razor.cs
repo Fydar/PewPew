@@ -17,11 +17,15 @@ namespace LostInSpace.WebApp.Client.Pages
 
 		private string DirectJoinLobbyKey { get; set; }
 
-		protected override Task OnInitializedAsync()
+		protected override async Task OnInitializedAsync()
 		{
 			Client.OnProcedureApplied += OnProcedureApplied;
 
-			return Task.CompletedTask;
+			if (Client.View.Lobby != null)
+			{
+				await Client.SendCommandAsync(new LobbyLeaveCommand());
+				Client.View.Lobby = null;
+			}
 		}
 
 		public void JoinLobbyButton(string lobbyKey)
@@ -36,7 +40,7 @@ namespace LostInSpace.WebApp.Client.Pages
 		{
 			_ = Client.SendCommandAsync(new FrontendJoinLobbyCommand()
 			{
-				LobbyKey = DirectJoinLobbyKey
+				LobbyKey = DirectJoinLobbyKey.Trim()
 			});
 		}
 
