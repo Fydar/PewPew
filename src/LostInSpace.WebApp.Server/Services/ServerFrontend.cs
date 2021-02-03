@@ -90,9 +90,15 @@ namespace LostInSpace.WebApp.Server.Services
 				}
 				case FrontendJoinLobbyCommand command:
 				{
-					isDirty = true;
+					if (command.LobbyKey == null)
+					{
+						break;
+					}
+
 					if (serverPortal.TryGetLobby(command.LobbyKey, out var lobby))
 					{
+						isDirty = true;
+
 						connection.CommandProcessor.RemovePlayer(connection);
 						connection.CommandProcessor = lobby;
 						connection.CommandProcessor.AddPlayer(connection);

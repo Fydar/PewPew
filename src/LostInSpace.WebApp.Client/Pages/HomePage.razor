@@ -3,60 +3,78 @@
 @using HuskyNet.WebClient.Services;
 
 <div class="container">
+
+	<h1 class="text-center">Pew Pew</h1>
+
 	<div class="row">
-		<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+		<div class="col-sm-12 col-md-9 col-lg-9 mx-auto">
 			<div class="card card-signin my-5">
 				<div class="card-body">
 
 					<h5 class="card-title text-center">Pew Pew</h5>
 
-					<div class="form-label-group">
-						<input @bind="DirectJoinLobbyKey" type="text" class="form-control" required>
-						<button @onclick="DirectJoinLobbyButton" class="btn btn-primary">Join Lobby</button>
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text" id="room-code-label">Room Code</span>
+						</div>
+						<input class="form-control" @bind="DirectJoinLobbyKey" @bind:event="oninput" placeholder="######" />
+						<div class="input-group-append">
+							<button class="btn btn-outline-secondary" @onclick="DirectJoinLobbyButton">Join</button>
+						</div>
 					</div>
 
-					<button @onclick="CreateLobbyButton" class="btn btn-primary">Create Lobby</button>
+					<div class="form-group form-group text-right">
+						<button class="btn btn-outline-secondary" @onclick="CreateLobbyButton">Create Lobby</button>
+					</div>
 
-					<table class="table">
+				</div>
 
+				<table class="table">
+
+					<thead>
+						<tr>
+							<td>Name</td>
+							<td>Players</td>
+							<td>Join</td>
+						</tr>
+					</thead>
+					<tbody>
 						@if (Client.View.Lobbies != null)
 						{
-							<thead>
-								<tr>
-									<td>Name</td>
-									<td>Players</td>
-								</tr>
-							</thead>
-							<tbody>
-								@if (Client?.View?.Lobbies != null
-								   && Client.View.Lobbies.Count > 0)
-								{
-									@foreach (var lobby in Client.View.Lobbies)
-									{
-										<tr>
-											<td>
-												@lobby.Name
-											</td>
-											<td>
-												@(lobby.CurrentPlayers)/@(lobby.MaxPlayers)
-											</td>
-										</tr>
-									}
-								}
-								else
+							@if (Client?.View?.Lobbies != null
+						  && Client.View.Lobbies.Count > 0)
+							{
+								@foreach (var lobby in Client.View.Lobbies)
 								{
 									<tr>
-										<td colspan="2">
-											<sub>There are current no lobbies.</sub>
+										<td>@lobby.Name <sub>(@lobby.Key)</sub></td>
+										<td>@(lobby.CurrentPlayers)/@(lobby.MaxPlayers)</td>
+										<td>
+											<button class="btn btn-primary" @onclick="() => JoinLobbyButton(lobby.Key)">Join</button>
 										</td>
 									</tr>
 								}
-							</tbody>
+							}
+							else
+							{
+								<tr>
+									<td colspan="3">
+										<sub>There are current no lobbies.</sub>
+									</td>
+								</tr>
+							}
 						}
+						else
+						{
+							<tr>
+								<td colspan="3">
+									<sub>Loading...</sub>
+								</td>
+							</tr>
+						}
+					</tbody>
 
-					</table>
-
-				</div>
+				</table>
 			</div>
 		</div>
 	</div>
