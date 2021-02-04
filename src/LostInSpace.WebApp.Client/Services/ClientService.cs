@@ -17,7 +17,7 @@ namespace HuskyNet.WebClient.Services
 	{
 		private readonly ILogger logger;
 		private readonly JsonSerializer serializer;
-		private WebSocketChannel serverConnection;
+		private WebSocketChannel webSocketChannel;
 
 		public ClientNetworkedView View { get; private set; }
 
@@ -40,7 +40,7 @@ namespace HuskyNet.WebClient.Services
 		{
 			byte[] data = SerializeCommand(command);
 
-			return serverConnection.SendAsync(data);
+			return webSocketChannel.SendAsync(data);
 		}
 
 		private async Task RunAsync(string serverUrl, CancellationToken cancellationToken = default)
@@ -50,48 +50,47 @@ namespace HuskyNet.WebClient.Services
 			View = new ClientNetworkedView();
 
 			// Client
-			serverConnection = new WebSocketChannel();
-			serverConnection.Logging.OnComplete += log =>
-			{
-				if (log.Level >= LostInSpace.WebApp.Shared.Services.Network.LogLevel.Information)
-				{
-					logger.LogInformation(log.ToString());
-				}
-			};
-			serverConnection.OnReceive += message =>
-			{
-				try
-				{
-					var procedure = DeserializeProcedure(message.Content);
-					procedure.ApplyToView(View);
-					OnProcedureApplied?.Invoke(procedure);
-				}
-				catch (Exception exception)
-				{
-					logger.LogError(exception, "Error whilst applying procedure to view");
-				}
-			};
-
 			logger.LogInformation($"Connecting to {target}");
 
 			try
 			{
-				await serverConnection.Connect(target, cancellationToken);
+				webSocketChannel = await WebSocketChannel.ConnectAsync(target, cancellationToken);
 			}
 			catch (Exception exception)
 			{
 				logger.LogError(exception, "Error whilst connecting");
+				return;
 			}
 
-			if (serverConnection.IsConnected)
+			await foreach (var networkEvent in webSocketChannel.ListenAsync(cancellationToken))
 			{
-				logger.LogInformation($"Connected to {target}");
-
-				_ = serverConnection.ListenAsync(cancellationToken);
-			}
-			else
-			{
-				logger.LogInformation($"Failed to connect to {target}");
+				switch (networkEvent)
+				{
+					case WebSocketBinaryMessageEvent message:
+					{
+						try
+						{
+							var procedure = DeserializeProcedure(message.Body);
+							procedure.ApplyToView(View);
+							OnProcedureApplied?.Invoke(procedure);
+						}
+						catch (Exception exception)
+						{
+							logger.LogError(exception, "Error whilst applying procedure to view");
+						}
+						break;
+					}
+					case WebSocketExceptionDisconnectEvent disconnectEvent:
+					{
+						logger.LogError(disconnectEvent.InnerException, "Client connection encountered an exception)");
+						break;
+					}
+					case WebSocketDisconnectEvent:
+					{
+						logger.LogInformation("Connection with client closed successfully");
+						break;
+					}
+				}
 			}
 
 			OnProcedureApplied?.Invoke(null);

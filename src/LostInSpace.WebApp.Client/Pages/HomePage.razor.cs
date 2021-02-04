@@ -38,6 +38,11 @@ namespace LostInSpace.WebApp.Client.Pages
 
 		public void DirectJoinLobbyButton(MouseEventArgs mouseEventArgs)
 		{
+			if (string.IsNullOrWhiteSpace(DirectJoinLobbyKey))
+			{
+				return;
+			}
+
 			_ = Client.SendCommandAsync(new FrontendJoinLobbyCommand()
 			{
 				LobbyKey = DirectJoinLobbyKey.Trim()

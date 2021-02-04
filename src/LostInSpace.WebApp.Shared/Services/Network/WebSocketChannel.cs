@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
-using System.Text;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,171 +11,135 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 {
 	public class WebSocketChannel : INetworkChannel
 	{
-		public NetworkLogChannel Logging { get; }
-
 		public WebSocket WebSocket { get; private set; }
-		public bool IsConnected { get; private set; }
 
-		public event Action OnConnected;
-		public event Action<NetworkChannelMessage> OnReceive;
-
-		public WebSocketChannel()
-		{
-			Logging = new NetworkLogChannel();
-		}
-
-		public WebSocketChannel(NetworkLogChannel logging)
-		{
-			Logging = logging;
-		}
-
-		public void UseWebSocket(WebSocket webSocket)
+		private WebSocketChannel(WebSocket webSocket)
 		{
 			WebSocket = webSocket;
-
-			IsConnected = true;
-			OnConnected?.Invoke();
 		}
 
-		public async Task Connect(Uri uri, CancellationToken cancellationToken = default)
+		public static async Task<WebSocketChannel> ConnectAsync(Uri uri, CancellationToken cancellationToken = default)
 		{
-			if (WebSocket != null)
-			{
-				throw new InvalidOperationException($"{nameof(WebSocketChannel)} is already in use.");
-			}
-
 			var clientWebSocket = new ClientWebSocket();
 
-			// clientWebSocket.Options.SetRequestHeader("Authorization", "Bearer ######");
-			// clientWebSocket.Options.SetRequestHeader("X-EnvironmentUser", Environment.UserDomainName);
+			await clientWebSocket.ConnectAsync(uri, cancellationToken);
 
-			WebSocket = clientWebSocket;
+			var webSocketChannel = new WebSocketChannel(clientWebSocket);
 
-			var connectLog = Logging.Start($"Connect to \"{uri}\"");
-
-			try
-			{
-				await clientWebSocket.ConnectAsync(uri, cancellationToken);
-				OnConnected?.Invoke();
-			}
-			catch (Exception exception)
-			{
-				connectLog.End(LogLevel.Error, "Exception thrown during connection", exception: exception);
-				return;
-			}
-
-			connectLog.End(LogLevel.Information, "Successfully connected");
-
-			IsConnected = true;
+			return webSocketChannel;
 		}
 
-		public async Task CloseAsync(CancellationToken cancellationToken = default)
+		public static WebSocketChannel ContinueFrom(WebSocket webSocket)
 		{
-			var trace = Logging.Start("Closing connection");
+			var webSocketChannel = new WebSocketChannel(webSocket);
 
-			try
-			{
-				await WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Scheduled Closure", cancellationToken);
-			}
-			catch (Exception exception)
-			{
-				trace.End(LogLevel.Error, "Exception thrown during connection closure", exception: exception);
-				return;
-			}
-
-			trace.End(LogLevel.Information, "Successfully closed connetion");
+			return webSocketChannel;
 		}
 
-		public async Task SendAsync(byte[] message, CancellationToken cancellationToken = default)
-		{
-			var trace = Logging.Start($"Sending");
-
-			var messageBytes = new ArraySegment<byte>(message);
-
-			try
-			{
-				await WebSocket.SendAsync(messageBytes, WebSocketMessageType.Binary, true, cancellationToken);
-			}
-			catch (Exception exception)
-			{
-				trace
-					.PushProperty("Message", Encoding.UTF8.GetString(message))
-					.End(LogLevel.Error, "Exception thrown during send", exception);
-				return;
-			}
-			trace
-				.PushProperty("Message", Encoding.UTF8.GetString(message))
-				.End(LogLevel.Debug, "Sent", null);
-		}
-
-		public async Task ListenAsync(CancellationToken cancellationToken = default)
+		public async IAsyncEnumerable<IWebSocketEvent> ListenAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
 		{
 			while (true)
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{
-					return;
+					yield break;
 				}
-
-				NetworkLog trace = null;
-				WebSocketReceiveResult result;
 
 				byte[] rentedBuffer = ArrayPool<byte>.Shared.Rent(8192);
 				var bufferSegment = new ArraySegment<byte>(rentedBuffer);
-				using var memoryStream = new MemoryStream();
+				var memoryStream = new MemoryStream();
 
-				try
+				DateTimeOffset? startTime = null;
+
+				WebSocketReceiveResult result = null;
+				do
 				{
-					do
+					if (cancellationToken.IsCancellationRequested)
 					{
-						if (cancellationToken.IsCancellationRequested
-							|| (WebSocket.State != WebSocketState.Open
-							&& WebSocket.State != WebSocketState.Connecting))
-						{
-							return;
-						}
+						yield break;
+					}
 
+					if (WebSocket.State != WebSocketState.Open
+						&& WebSocket.State != WebSocketState.Connecting)
+					{
+						yield return new WebSocketDisconnectEvent()
+						{
+							CloseStatus = WebSocket.CloseStatus ?? WebSocketCloseStatus.Empty
+						};
+						ArrayPool<byte>.Shared.Return(rentedBuffer);
+						yield break;
+					}
+
+					Exception innerException = null;
+
+					try
+					{
 						result = await WebSocket.ReceiveAsync(bufferSegment, cancellationToken);
-						if (trace == null)
-						{
-							trace = Logging.Start($"Receiving");
-						}
+					}
+					catch (Exception exception)
+					{
+						innerException = exception;
+					}
+					startTime ??= DateTimeOffset.UtcNow;
 
+					if (innerException == null)
+					{
 						memoryStream.Write(bufferSegment.Array, bufferSegment.Offset, result.Count);
 					}
-					while (!result.EndOfMessage);
-				}
-				catch (Exception exception)
-				{
-					if (trace == null)
+					else
 					{
-						trace = Logging.Start($"Receiving");
+						yield return new WebSocketExceptionDisconnectEvent()
+						{
+							StartTime = startTime.Value,
+							EndTime = DateTimeOffset.UtcNow,
+
+							CloseStatus = result?.CloseStatus ?? WebSocketCloseStatus.Empty,
+							InnerException = innerException
+						};
+
+						ArrayPool<byte>.Shared.Return(rentedBuffer);
+						yield break;
 					}
-					trace.End(LogLevel.Error, "Exception thrown during listen", exception: exception);
-					return;
+
 				}
-				finally
+				while (!result.EndOfMessage);
+
+				ArrayPool<byte>.Shared.Return(rentedBuffer);
+
+				if (result.CloseStatus.HasValue)
 				{
-					ArrayPool<byte>.Shared.Return(rentedBuffer);
-				}
-
-				byte[] body = memoryStream.ToArray();
-				var asStream = new MemoryStream(body);
-
-				if (!result.CloseStatus.HasValue)
-				{
-					trace
-						.PushProperty("Message", Encoding.UTF8.GetString(body))
-						.End(LogLevel.Debug, $"Recieved");
-
-					OnReceive?.Invoke(new NetworkChannelMessage(this, asStream));
+					yield return new WebSocketDisconnectEvent()
+					{
+						StartTime = startTime ?? DateTimeOffset.UtcNow,
+						EndTime = DateTimeOffset.UtcNow,
+						CloseStatus = result.CloseStatus.Value,
+					};
+					yield break;
 				}
 				else
 				{
-					trace
-						.End(LogLevel.Information, $"Closed {result.CloseStatus}");
+					memoryStream.Seek(0, SeekOrigin.Begin);
+
+					yield return new WebSocketBinaryMessageEvent()
+					{
+						StartTime = startTime ?? DateTimeOffset.UtcNow,
+						EndTime = DateTimeOffset.UtcNow,
+						Body = memoryStream,
+					};
 				}
 			}
+		}
+
+		public async Task CloseAsync(CancellationToken cancellationToken = default)
+		{
+			await WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Scheduled Closure", cancellationToken);
+		}
+
+		public async Task SendAsync(byte[] message, CancellationToken cancellationToken = default)
+		{
+			var messageBytes = new ArraySegment<byte>(message);
+
+			await WebSocket.SendAsync(messageBytes, WebSocketMessageType.Binary, true, cancellationToken);
 		}
 	}
 }

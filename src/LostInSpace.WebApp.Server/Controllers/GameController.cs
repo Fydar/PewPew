@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;
-using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
@@ -44,53 +43,62 @@ namespace LostInSpace.WebApp.Server.Controllers
 			var cancellationToken = context.RequestAborted;
 			using var currentSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-			var socketChannel = new WebSocketChannel();
-
-			socketChannel.Logging.OnComplete += log =>
-			{
-				var disposables = new List<IDisposable>
-				{
-					LogContext.PushProperty("Elapsed", log.ElapsedTime),
-					LogContext.PushProperty("Result", log.Result)
-				};
-				foreach (var property in log.Properties)
-				{
-					disposables.Add(LogContext.PushProperty(property.Key, property.Value));
-				}
-
-				if (log.Level >= Shared.Services.Network.LogLevel.Debug)
-				{
-					logger.Log((LogLevel)(int)log.Level, log.Exception, "MessageLog");
-				}
-
-				foreach (var disposable in disposables)
-				{
-					disposable.Dispose();
-				}
-			};
-
-			socketChannel.UseWebSocket(currentSocket);
+			var socketChannel = WebSocketChannel.ContinueFrom(currentSocket);
 			var clientConnection = new GameClientConnection(LocalId.NewId(), socketChannel)
 			{
 				CommandProcessor = serverFrontend
 			};
 
 			connectionManagerService.Connections.AcceptNewClientConnection(clientConnection);
-
 			logger.Log(LogLevel.Information, "Accepted client WebSocket connection");
 
-			try
+			await foreach (var networkEvent in socketChannel.ListenAsync(cancellationToken))
 			{
-				await socketChannel.ListenAsync(cancellationToken);
-			}
-			catch (Exception exception)
-			{
-				logger.LogError(exception, "Client connection encountered an exception");
-			}
+				switch (networkEvent)
+				{
+					case WebSocketBinaryMessageEvent message:
+					{
+						if (logger.IsEnabled(LogLevel.Debug))
+						{
+							using (LogContext.PushProperty("Message", LogStream(message.Body)))
+							using (LogContext.PushProperty("Duration", message.Elapsed))
+							{
+								logger.Log(LogLevel.Debug, "MessageLog");
+							}
+						}
 
-			logger.Log(LogLevel.Information, "Closed client WebSocket connection");
+						connectionManagerService.Connections.HandleOnMessageRecieved(clientConnection, message);
+
+						break;
+					}
+					case WebSocketExceptionDisconnectEvent disconnectEvent:
+					{
+						logger.LogError(disconnectEvent.InnerException, "Client connection encountered an exception");
+						break;
+					}
+					case WebSocketDisconnectEvent disconnectEvent:
+					{
+						break;
+					}
+				}
+			}
 
 			connectionManagerService.Connections.RemoveClientConnection(clientConnection);
+			logger.Log(LogLevel.Information, "Closed client WebSocket connection");
+		}
+
+		private static string LogStream(Stream stream)
+		{
+			long originalPosition = stream.Position;
+
+			string logMessage;
+			var sr = new StreamReader(stream);
+			{
+				logMessage = sr.ReadToEnd();
+			}
+			stream.Position = originalPosition;
+
+			return logMessage;
 		}
 	}
 }
