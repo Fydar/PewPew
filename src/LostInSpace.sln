@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LettuceEncrypt", "..\..\..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "McMaster.AspNetCore.Kestrel.Certificates", "..\..\..\LettuceEncrypt\src\Kestrel.Certificates\McMaster.AspNetCore.Kestrel.Certificates.csproj", "{878B531B-9876-477C-807D-77B9A719B86A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdParty", "3rdParty", "{12696DA5-3243-4EAF-BAB1-91007BCC9F71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FA77ACDE-DCBD-4A1D-9C02-18E6D609A721} = {12696DA5-3243-4EAF-BAB1-91007BCC9F71}
+		{878B531B-9876-477C-807D-77B9A719B86A} = {12696DA5-3243-4EAF-BAB1-91007BCC9F71}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FAEB5F72-95EC-40EA-B57A-9CA7F6891EDF}

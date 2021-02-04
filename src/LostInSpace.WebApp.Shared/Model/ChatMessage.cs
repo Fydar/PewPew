@@ -1,4 +1,4 @@
-﻿namespace Husky.Game.Shared.Model
+﻿namespace LostInSpace.WebApp.Shared.Model
 {
 	public struct ChatMessage
 	{

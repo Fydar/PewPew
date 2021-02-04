@@ -1,10 +1,8 @@
-﻿using LostInSpace.WebApp.Server.Controllers;
-using LostInSpace.WebApp.Server.Services;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace HuskyNet.Instance.Server.Services
+namespace LostInSpace.WebApp.Server.Services
 {
 	public class ServerPortal
 	{

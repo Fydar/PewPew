@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Husky.Game.Shared.Model
+namespace LostInSpace.WebApp.Shared.Model
 {
 	public class PackagedModel<TModel>
 		where TModel : class

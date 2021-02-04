@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LostInSpace.WebApp.Server.Controllers
+namespace LostInSpace.WebApp.Server.Services
 {
 	public static class LobbyIdGenerator
 	{

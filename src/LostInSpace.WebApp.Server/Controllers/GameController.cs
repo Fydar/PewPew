@@ -1,5 +1,5 @@
-﻿using Husky.Game.Shared.Model;
-using LostInSpace.WebApp.Server.Services;
+﻿using LostInSpace.WebApp.Server.Services;
+using LostInSpace.WebApp.Shared.Model;
 using LostInSpace.WebApp.Shared.Services.Network;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Husky.Game.Shared.Model
+namespace LostInSpace.WebApp.Shared.Model
 {
 	[TypeConverter(typeof(LocalIdConverter))]
 	[DebuggerDisplay("{ToString(),nq}")]

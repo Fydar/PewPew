@@ -1,4 +1,3 @@
-using HuskyNet.Instance.Server.Services;
 using LettuceEncrypt;
 using LostInSpace.WebApp.Server.Services;
 using Microsoft.AspNetCore.Builder;

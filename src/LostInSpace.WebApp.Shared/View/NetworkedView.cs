@@ -1,4 +1,4 @@
-﻿using Husky.Game.Shared.Model;
+﻿using LostInSpace.WebApp.Shared.Model;
 using System.Collections.Generic;
 
 namespace LostInSpace.WebApp.Shared.View
