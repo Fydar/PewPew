@@ -12,7 +12,7 @@ namespace LostInSpace.WebApp.Server.Services
 
 		public event Action<GameClientConnection> OnConnect;
 		public event Action<GameClientConnection> OnDisconnect;
-		public event Action<GameClientConnection, NetworkChannelMessage> OnMessageRecieved;
+		public event Action<GameClientConnection, WebSocketBinaryMessageEvent> OnMessageRecieved;
 
 		public IReadOnlyList<GameClientConnection> Connections => connections;
 
@@ -25,7 +25,6 @@ namespace LostInSpace.WebApp.Server.Services
 		{
 			connections.Add(clientConnection);
 			OnConnect?.Invoke(clientConnection);
-			clientConnection.Channel.OnReceive += HandleOnMessageRecieved;
 		}
 
 		public void RemoveClientConnection(GameClientConnection clientConnection)
@@ -33,20 +32,12 @@ namespace LostInSpace.WebApp.Server.Services
 			if (connections.Remove(clientConnection))
 			{
 				OnDisconnect?.Invoke(clientConnection);
-				clientConnection.Channel.OnReceive -= HandleOnMessageRecieved;
 			}
 		}
 
-		private void HandleOnMessageRecieved(NetworkChannelMessage message)
+		public void HandleOnMessageRecieved(GameClientConnection clientConnection, WebSocketBinaryMessageEvent message)
 		{
-			foreach (var connection in connections)
-			{
-				if (connection.Channel == message.Channel)
-				{
-					OnMessageRecieved?.Invoke(connection, message);
-					break;
-				}
-			}
+			OnMessageRecieved?.Invoke(clientConnection, message);
 		}
 	}
 }
