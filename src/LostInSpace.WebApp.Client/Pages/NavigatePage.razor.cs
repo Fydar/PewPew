@@ -1,6 +1,6 @@
-﻿using Husky.Game.Shared.Model;
-using HuskyNet.WebClient.Services;
+﻿using HuskyNet.WebClient.Services;
 using LostInSpace.WebApp.Shared.Commands;
+using LostInSpace.WebApp.Shared.Model;
 using LostInSpace.WebApp.Shared.Procedures;
 using LostInSpace.WebApp.Shared.View;
 using Microsoft.AspNetCore.Components;

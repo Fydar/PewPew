@@ -1,4 +1,4 @@
-﻿using Husky.Game.Shared.Model;
+﻿using LostInSpace.WebApp.Shared.Model;
 using LostInSpace.WebApp.Shared.Services.Network;
 
 namespace LostInSpace.WebApp.Server.Services

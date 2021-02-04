@@ -1,6 +1,6 @@
-﻿using Husky.Game.Shared.Model;
-using LostInSpace.WebApp.Server.Services;
+﻿using LostInSpace.WebApp.Server.Services;
 using LostInSpace.WebApp.Shared.Commands;
+using LostInSpace.WebApp.Shared.Model;
 using LostInSpace.WebApp.Shared.Procedures;
 using LostInSpace.WebApp.Shared.View;
 using System;
