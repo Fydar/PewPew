@@ -17,7 +17,7 @@ namespace LostInSpace.WebApp.Server
 		public static int Main(string[] args)
 		{
 			var loggerConfiguration = new LoggerConfiguration()
-				.MinimumLevel.Debug()
+				.MinimumLevel.Information()
 				.MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
 				.MinimumLevel.Override("Microsoft.AspNetCore.Server.Kestrel", LogEventLevel.Error)
 				.Enrich.FromLogContext()
