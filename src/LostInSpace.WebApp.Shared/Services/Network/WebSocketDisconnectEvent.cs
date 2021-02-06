@@ -10,5 +10,9 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 		public WebSocketCloseStatus CloseStatus { get; set; }
 
 		public TimeSpan Elapsed => EndTime - StartTime;
+
+		void IDisposable.Dispose()
+		{
+		}
 	}
 }

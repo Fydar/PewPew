@@ -50,7 +50,7 @@ namespace LostInSpace.WebApp.Shared.Model
 					{
 						if (modelType.IsAssignableFrom(searchType))
 						{
-							typeLookup.Add(searchType.FullName, searchType);
+							typeLookup.Add(searchType.Name, searchType);
 						}
 					}
 				}
@@ -70,7 +70,7 @@ namespace LostInSpace.WebApp.Shared.Model
 		{
 			return new PackagedModel<TModel>()
 			{
-				Type = model.GetType().FullName,
+				Type = model.GetType().Name,
 				Data = JObject.FromObject(model)
 			};
 		}

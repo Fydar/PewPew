@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;
-using System.IO;
+using System;
+using System.Text;
 using System.Threading.Tasks;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
@@ -49,6 +50,7 @@ namespace LostInSpace.WebApp.Server.Controllers
 				CommandProcessor = serverFrontend
 			};
 
+			clientConnection.OnBeforeMessageSent += OnBeforeMessageHandler;
 			connectionManagerService.Connections.AcceptNewClientConnection(clientConnection);
 			logger.Log(LogLevel.Information, "Accepted client WebSocket connection");
 
@@ -83,22 +85,24 @@ namespace LostInSpace.WebApp.Server.Controllers
 				}
 			}
 
+			clientConnection.OnBeforeMessageSent -= OnBeforeMessageHandler;
 			connectionManagerService.Connections.RemoveClientConnection(clientConnection);
 			logger.Log(LogLevel.Information, "Closed client WebSocket connection");
 		}
 
-		private static string LogStream(Stream stream)
+		private void OnBeforeMessageHandler(byte[] body)
 		{
-			long originalPosition = stream.Position;
-
-			string logMessage;
-			var sr = new StreamReader(stream);
+			if (logger.IsEnabled(LogLevel.Debug))
 			{
-				logMessage = sr.ReadToEnd();
-			}
-			stream.Position = originalPosition;
+				string message = Encoding.UTF8.GetString(body);
 
-			return logMessage;
+				logger.Log(LogLevel.Debug, message);
+			}
+		}
+
+		private static string LogStream(ArraySegment<byte> body)
+		{
+			return Encoding.UTF8.GetString(body.Array, body.Offset, body.Count);
 		}
 	}
 }

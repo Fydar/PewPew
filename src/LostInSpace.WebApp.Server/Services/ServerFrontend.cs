@@ -49,7 +49,7 @@ namespace LostInSpace.WebApp.Server.Services
 
 					foreach (var subscriber in updateSubscribers)
 					{
-						_ = subscriber.Channel.SendAsync(lastUpdate, cancellationToken);
+						_ = subscriber.SendAsync(lastUpdate, cancellationToken);
 					}
 				}
 			}
@@ -60,7 +60,10 @@ namespace LostInSpace.WebApp.Server.Services
 			isDirty = true;
 			updateSubscribers.Add(connection);
 
-			_ = connection.Channel.SendAsync(lastUpdate);
+			if (lastUpdate != null)
+			{
+				_ = connection.SendAsync(lastUpdate);
+			}
 		}
 
 		public void RemovePlayer(GameClientConnection connection)

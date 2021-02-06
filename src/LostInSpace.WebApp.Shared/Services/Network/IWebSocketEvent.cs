@@ -2,7 +2,7 @@
 
 namespace LostInSpace.WebApp.Shared.Services.Network
 {
-	public interface IWebSocketEvent
+	public interface IWebSocketEvent : IDisposable
 	{
 		DateTimeOffset StartTime { get; }
 		DateTimeOffset EndTime { get; }

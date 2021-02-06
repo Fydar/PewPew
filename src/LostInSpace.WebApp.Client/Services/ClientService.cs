@@ -1,4 +1,5 @@
 ﻿using LostInSpace.WebApp.Shared.Commands;
+using LostInSpace.WebApp.Shared.Model;
 using LostInSpace.WebApp.Shared.Procedures;
 using LostInSpace.WebApp.Shared.Services.Network;
 using LostInSpace.WebApp.Shared.View;
@@ -69,7 +70,8 @@ namespace HuskyNet.WebClient.Services
 					{
 						try
 						{
-							var procedure = DeserializeProcedure(message.Body);
+							var stream = new MemoryStream(message.Body.Array, message.Body.Offset, message.Body.Count, false, false);
+							var procedure = DeserializeProcedure(stream);
 							procedure.ApplyToView(View);
 							OnProcedureApplied?.Invoke(procedure);
 						}

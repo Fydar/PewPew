@@ -75,26 +75,21 @@ namespace LostInSpace.WebApp.Server.Services
 
 		public void RecieveCommandFromPlayer(GameClientConnection connection, ClientCommand clientCommand)
 		{
-			switch (clientCommand)
+			if (clientCommand is LobbyLeaveCommand)
 			{
-				case LobbyLeaveCommand:
+				if (connection.CommandProcessor == this)
 				{
-					if (connection.CommandProcessor == this)
-					{
-						RemovePlayer(connection);
+					RemovePlayer(connection);
 
-						connection.CommandProcessor = serverFrontend;
-						AddPlayer(connection);
-					}
-					break;
+					connection.CommandProcessor = serverFrontend;
+					serverFrontend.AddPlayer(connection);
 				}
-				default:
-					viewMutex.WaitOne();
-					var procedures = commandProcessor.HandleRecieveCommand(connection, clientCommand).ToList();
-					ApplyViewProcedures(procedures, connection);
-					viewMutex.ReleaseMutex();
-					break;
 			}
+
+			viewMutex.WaitOne();
+			var procedures = commandProcessor.HandleRecieveCommand(connection, clientCommand).ToList();
+			ApplyViewProcedures(procedures, connection);
+			viewMutex.ReleaseMutex();
 		}
 
 		private async Task GameTickerWorker()
@@ -152,12 +147,12 @@ namespace LostInSpace.WebApp.Server.Services
 					{
 						if (kickProcedure.Identifier == player.Identifier)
 						{
-							_ = player.Channel.CloseAsync();
+							_ = player.CloseAsync();
 							continue;
 						}
 					}
 
-					_ = player.Channel.SendAsync(serialized);
+					_ = player.SendAsync(serialized);
 				}
 			}
 		}
