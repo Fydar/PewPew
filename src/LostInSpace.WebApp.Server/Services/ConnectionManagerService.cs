@@ -27,7 +27,8 @@ namespace LostInSpace.WebApp.Server.Services
 			};
 			Connections.OnMessageRecieved += (connection, message) =>
 			{
-				var clientCommand = DeserializeClientCommand(message.Body);
+				var stream = new MemoryStream(message.Body.Array, message.Body.Offset, message.Body.Count, false, false);
+				var clientCommand = DeserializeClientCommand(stream);
 
 				connection.CommandProcessor.RecieveCommandFromPlayer(connection, clientCommand);
 			};

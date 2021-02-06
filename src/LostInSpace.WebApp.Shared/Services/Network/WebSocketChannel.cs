@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -47,7 +46,6 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 
 				byte[] rentedBuffer = ArrayPool<byte>.Shared.Rent(8192);
 				var bufferSegment = new ArraySegment<byte>(rentedBuffer);
-				var memoryStream = new MemoryStream();
 
 				DateTimeOffset? startTime = null;
 
@@ -82,11 +80,7 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 					}
 					startTime ??= DateTimeOffset.UtcNow;
 
-					if (innerException == null)
-					{
-						memoryStream.Write(bufferSegment.Array, bufferSegment.Offset, result.Count);
-					}
-					else
+					if (innerException != null)
 					{
 						yield return new WebSocketExceptionDisconnectEvent()
 						{
@@ -101,13 +95,24 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 						yield break;
 					}
 
+					if (!result.EndOfMessage)
+					{
+						byte[] newBuffer = ArrayPool<byte>.Shared.Rent(rentedBuffer.Length * 2);
+						rentedBuffer.CopyTo(newBuffer, 0);
+
+						bufferSegment = new ArraySegment<byte>(newBuffer, rentedBuffer.Length,
+							newBuffer.Length - rentedBuffer.Length);
+
+						ArrayPool<byte>.Shared.Return(rentedBuffer);
+						rentedBuffer = newBuffer;
+					}
 				}
 				while (!result.EndOfMessage);
 
-				ArrayPool<byte>.Shared.Return(rentedBuffer);
-
 				if (result.CloseStatus.HasValue)
 				{
+					ArrayPool<byte>.Shared.Return(rentedBuffer);
+
 					yield return new WebSocketDisconnectEvent()
 					{
 						StartTime = startTime ?? DateTimeOffset.UtcNow,
@@ -118,13 +123,15 @@ namespace LostInSpace.WebApp.Shared.Services.Network
 				}
 				else
 				{
-					memoryStream.Seek(0, SeekOrigin.Begin);
+					var wholeBuffer = new ArraySegment<byte>(rentedBuffer, 0, result.Count);
 
 					yield return new WebSocketBinaryMessageEvent()
 					{
 						StartTime = startTime ?? DateTimeOffset.UtcNow,
 						EndTime = DateTimeOffset.UtcNow,
-						Body = memoryStream,
+
+						Body = wholeBuffer,
+						rentedArray = rentedBuffer
 					};
 				}
 			}

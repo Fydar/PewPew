@@ -108,21 +108,6 @@ namespace LostInSpace.WebApp.Shared.View
 			return x.GetHashCode() ^ (y.GetHashCode() << 2);
 		}
 
-		public override bool Equals(object other)
-		{
-			if (!(other is Vector2))
-			{
-				return false;
-			}
-
-			return Equals((Vector2)other);
-		}
-
-		public bool Equals(Vector2 other)
-		{
-			return x == other.x && y == other.y;
-		}
-
 		public static Vector2 Reflect(Vector2 inDirection, Vector2 inNormal)
 		{
 			float factor = -2F * Dot(inNormal, inDirection);

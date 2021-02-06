@@ -336,27 +336,6 @@ namespace LostInSpace.WebApp.Server.Game
 		{
 			switch (clientCommand)
 			{
-				case LobbyLeaveCommand:
-				{
-					yield return new ScopedNetworkedViewProcedure(
-						ProcedureScope.Broadcast,
-						new ShipDamageProcedure()
-						{
-							Source = connection.Identifier,
-							Target = connection.Identifier,
-							Damage = 10000
-						}
-					);
-
-					yield return new ScopedNetworkedViewProcedure(
-						ProcedureScope.Broadcast,
-						new LobbyPlayerLeaveProcedure()
-						{
-							Identifier = connection.Identifier
-						}
-					);
-					break;
-				}
 				case LaunchGameCommand:
 				{
 					var world = new GameplayWorld();
