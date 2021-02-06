@@ -38,6 +38,7 @@ namespace LostInSpace.WebApp.Server.Services
 
 				if (isDirty)
 				{
+					isDirty = false;
 					var lobbies = serverPortal.AllLobbies();
 					var lobbyStatuses = new List<LobbyStatus>(lobbies.Select(l => l.Status));
 
