@@ -6,13 +6,13 @@
 
 	<div class="page-lobby">
 
-		<div style="height: 128px"></div>
+		<div class="my-5"></div>
 
 		@if (Client.View?.Lobby != null)
 		{
 			<h3>Players</h3>
 
-			<div class="row">
+			<div class="row my-3">
 				@for (int i = 0; i < 2; i++)
 				{
 					int teamId = i;
@@ -60,96 +60,39 @@
 				}
 			</div>
 
-			<div style="height: 64px"></div>
-
-			<div class="row">
+			<div class="row my-5">
 				<button class="btn btn-primary" @onclick="this.LaunchGameButton">Launch Game</button>
 			</div>
 
-			<div style="height: 64px"></div>
-
 			<h3>Spectators</h3>
 
-			@if (Client.View.Lobby != null)
-			{
-				foreach (var player in Client.View.Lobby.Players)
+			<div class="col-sm-6">
+				@if (Client.View.Lobby != null)
 				{
-					if (player.Value.TeamId != -1)
+					foreach (var player in Client.View.Lobby.Players)
 					{
-						continue;
-					}
+						if (player.Value.TeamId != -1)
+						{
+							continue;
+						}
 
-					<div class="input-group">
-						@if (player.Key == Client.View.Client.ClientId)
-						{
-							<input class="form-control" @bind="YourName" @bind:event="oninput" />
-						}
-						else
-						{
-							<span class="input-group-text" id="basic-addon1">@player.Value.DisplayName</span>
-						}
-					</div>
+						<div class="input-group">
+							@if (player.Key == Client.View.Client.ClientId)
+							{
+								<input class="form-control" @bind="YourName" @bind:event="oninput" />
+							}
+							else
+							{
+								<span class="input-group-text" id="basic-addon1">@player.Value.DisplayName</span>
+							}
+						</div>
+					}
 				}
-			}
+			</div>
 
 			<div class="input-group">
 				<button class="btn btn-primary" @onclick="() => JoinTeamButton(-1)">Spectate</button>
 			</div>
-
-
-			<h1>Guide</h1>
-
-			<p>Team-based PvP</p>
-
-			<h2>Classes</h2>
-
-			<ul class="list-unstyled">
-
-				<li class="media">
-					<div class="mr-3 ship-preview">
-						<div class="ship-scout"></div>
-					</div>
-					<div class="media-body">
-						<h5 class="mt-0">Scout</h5>
-						<p>Fast-moving with rapid-fire lasers.</p>
-						<p><b>Tip:</b> Use your speed to tank a few hits and safely retreat to the back lines until your needed again.</p>
-					</div>
-				</li>
-
-				<li class="media">
-					<div class="mr-3 ship-preview">
-						<div class="ship-gunship"></div>
-					</div>
-					<div class="media-body">
-						<h5 class="mt-0">Gunship</h5>
-						<p>Long-ranged, slow-moving ship with a high-damage torpedo ability.</p>
-						<p><b>Tip:</b> Stay out of the range of your enemies and rain-down fire from a distance.</p>
-					</div>
-				</li>
-
-				<li class="media">
-					<div class="mr-3 ship-preview">
-						<div class="ship-battleship"></div>
-					</div>
-					<div class="media-body">
-						<h5 class="mt-0">Battleship</h5>
-						<p>Durable, slow-moving with close-range lasers.</p>
-						<p><b>Tip:</b> Charge the enemy to absorbe fire for your <b>gunships</b> and <b>scouts</b>..</p>
-					</div>
-				</li>
-
-				<li class="media">
-					<div class="mr-3 ship-preview">
-						<div class="ship-capital"></div>
-					</div>
-					<div class="media-body">
-						<h5 class="mt-0">Capital</h5>
-						<p>Durable ship with game-changing firepower in bursts</p>
-						<p><b>Tip:</b> Use the <b>barrage</b> ability button at the bottom-right of your screen to deliver a stream of high-damage torpedoes.</p>
-					</div>
-				</li>
-
-			</ul>
 		}
 		else
 		{
@@ -157,6 +100,8 @@
 		}
 
 		<div style="height: 128px"></div>
+
+		<UserGuide />
 
 	</div>
 </div>
