@@ -1,0 +1,128 @@
+﻿@page "/navigate"
+
+@layout PewPew.WebApp.Client.Shared.GameLayout;
+
+@using HuskyNet.WebClient.Services;
+
+<div class="page-insert">
+
+	@{
+		string cursor = "default";
+
+		if (InputMode == NavigateInputMode.SetDestination)
+		{
+			cursor = "crosshair";
+		}
+		else if (InputMode == NavigateInputMode.Ability)
+		{
+			cursor = "cell";
+		}
+	}
+
+	<div class="page-gridarea" style="cursor: @cursor;">
+
+		<div class="grid" id="zoomcanvasid" @onclick="MapOnClick" @onmouseup="MapOnMouseUp" oncontextmenu="return false;">
+
+			@if (Client.View?.Lobby?.World?.Projectiles != null)
+			{
+				@foreach (var projectileKvp in Client.View.Lobby.World.Projectiles)
+				{
+					var projectile = projectileKvp.Value;
+
+					<div class="projectile" style="@(projectile.IsDestroyed ? "opacity: 0;" : $"top: 0; left: 0; transform: translate({projectile.Position.x}px, {projectile.Position.y}px) rotate({projectile.Rotation + 180.0f}deg);")">
+					</div>
+				}
+			}
+
+			@if (Client.View?.Lobby?.World?.Beams != null)
+			{
+				<svg class="beams">
+					@foreach (var beamKvp in Client.View.Lobby.World.Beams)
+					{
+						var beam = beamKvp.Value;
+
+						string colour;
+						switch (beam.LifetimeRemaining)
+						{
+							default:
+							case 0:
+								colour = "#8a7c69";
+								break;
+
+							case 1:
+								colour = "#c7ad89";
+								break;
+
+							case 2:
+								colour = "#eecda0";
+								break;
+						}
+
+						<polyline style="stroke: @colour; stroke-width: @beam.Thickness;" points="@((int)beam.StartPosition.x),@((int)beam.StartPosition.y) @((int)beam.EndPosition.x),@((int)beam.EndPosition.y)"></polyline>
+					}
+				</svg>
+			}
+
+			@if (Client.View?.Lobby?.World?.Ships != null)
+			{
+				@foreach (var shipKvp in Client.View.Lobby.World.Ships)
+				{
+					var ship = shipKvp.Value;
+
+					PewPew.WebApp.Shared.View.LobbyPublicPlayerProfile owner = null;
+
+					Client.View.Lobby?.Players?.TryGetValue(shipKvp.Key, out owner);
+
+					<div class="player @ship.ShipType team-@(owner?.TeamId ?? -1) @(ship.IsDestroyed ? "destroyed" : "")" style="top: 0; left: 0; transform: translate(@(ship.Position.x)px, @(ship.Position.y)px)">
+
+						<div class="player-ship" style="transform: rotate(@(ship.Rotation + 180.0f)deg);">
+
+						</div>
+
+						@if (!ship.IsDestroyed)
+						{
+							<div class="bar">
+								<div class="fill" style="width: @((int)(ship.HealthPercentage * 100))%" >
+
+								</div>
+							</div>
+							@if (owner != null)
+							{
+								<label>@owner.DisplayName</label>
+							}
+							else
+							{
+								<label>Disconnected...</label>
+							}
+
+							@if (shipKvp.Key == Client.View?.Client?.ClientId)
+							{
+								float range = ship.BeamsRange + ship.Radius;
+
+								<div class="range-indicator" style="width: @(range * 2)px; height: @(range * 2)px;"></div>
+							}
+						}
+
+					</div>
+				}
+			}
+		</div>
+
+		@{
+			PewPew.WebApp.Shared.View.GameplayShip playerShip = null;
+			Client.View?.Lobby?.World?.Ships.TryGetValue(Client.View.Client.ClientId, out playerShip);
+		}
+
+		@if (playerShip != null && playerShip.HasBarrage)
+		{
+			bool canBarrage = false;
+			@if (InputMode == NavigateInputMode.SetDestination && playerShip.CanBarrage)
+			{
+				canBarrage = true;
+			}
+
+			<div style="@(canBarrage ? "opacity: 1" : "opacity: 0.3")" class="game-btn game-btn-navigate" @onclick="AbilityButtonClicked">Barrage</div>
+		}
+
+	</div>
+</div>
