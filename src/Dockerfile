@@ -4,9 +4,9 @@ EXPOSE 443
 
 RUN ls
 
-COPY /LostInSpace.WebApp.Server/bin/Release/net5.0/publish/ /code/
+COPY /PewPew.WebApp.Server/bin/Release/net5.0/publish/ /code/
 
 RUN ls ./code
 
 WORKDIR /code
-ENTRYPOINT ["dotnet", "LostInSpace.WebApp.Server.dll"]
+ENTRYPOINT ["dotnet", "PewPew.WebApp.Server.dll"]
