@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: 'ECR: Pew-Pew Instance'
+
+Metadata: {}
+
+Parameters: {}
+
+Mappings: {}
+
+Resources:
+
+  PewPewInstanceRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: pewpewinstance
+
+Outputs:
+
+  InstanceArn:
+    Value: !GetAtt [PewPewInstanceRepository, Arn]
+    
