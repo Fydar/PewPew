@@ -19,15 +19,17 @@
 				var actualElement = document.getElementById('zoomcanvasid');
 
 				// and forward it it to panzoom.
-                panzoom(actualElement,
+                var el = panzoom(actualElement,
 				    {
 					    zoomSpeed: 0.125, // 6.5% per mouse wheel event
                         maxZoom: 1,
 					    minZoom: 0.25,
                         bounds: true,
-                        boundsPadding: 0.1,
+						boundsPadding: 0.1,
                     }
                 );
+
+				el.moveTo(-2048, -2048);
             }
         };
     </script>
