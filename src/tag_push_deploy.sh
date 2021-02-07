@@ -5,12 +5,12 @@ aws ecr get-login-password --region us-east-1 | docker login --username AWS --pa
 
 # Build
 
-docker build -t portfolioinstance .
+docker build -t pewpewinstance .
 
 # Tag
 
-docker tag portfolioinstance:latest 222779217717.dkr.ecr.us-east-1.amazonaws.com/portfolioinstance:latest
+docker tag pewpewinstance:latest 222779217717.dkr.ecr.us-east-1.amazonaws.com/pewpewinstance:latest
 
 # Deploy
 
-docker push 222779217717.dkr.ecr.us-east-1.amazonaws.com/portfolioinstance:latest
+docker push 222779217717.dkr.ecr.us-east-1.amazonaws.com/pewpewinstance:latest
