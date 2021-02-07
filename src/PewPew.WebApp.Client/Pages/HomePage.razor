@@ -4,53 +4,82 @@
 
 <div class="container">
 
+	<div style="height: 128px;"></div>
+
 	<h1 class="text-center">Pew Pew</h1>
 
-	<div class="row">
-		<div class="col-sm-12 col-md-9 col-lg-9 mx-auto">
-			<div class="card card-signin my-5">
-				<div class="card-body">
-
-					<h5 class="card-title text-center">Pew Pew</h5>
-
-					<div class="input-group form-group">
-						<div class="input-group-prepend">
-							<span class="input-group-text" id="room-code-label">Room Code</span>
-						</div>
-						<input class="form-control" @bind="DirectJoinLobbyKey" @bind:event="oninput" placeholder="######" />
-						<div class="input-group-append">
-							<button class="btn btn-outline-secondary" @onclick="DirectJoinLobbyButton">Join</button>
-						</div>
+	@if (Client.View?.Lobbies == null)
+	{
+		<div class="row">
+			<div style="width: 485px;" class="mx-auto">
+				<div class="card card-signin my-5">
+					<div class="card-body">
+						<h5 class="text-center">Connecting...</h5>
 					</div>
-
-					<div class="form-group form-group text-right">
-						<button class="btn btn-outline-secondary" @onclick="CreateLobbyButton">Create Lobby</button>
-					</div>
-
 				</div>
+			</div>
+		</div>
+	}
+	else
+	{
+		<div class="row">
+			<div style="width: 485px;" class="mx-auto">
+				<div class="card card-signin my-5">
+					<div class="card-body">
 
-				<table class="table">
+						<div class="input-group form-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="room-code-label">Room Code</span>
+							</div>
+							<input class="form-control" @bind="DirectJoinLobbyKey" @bind:event="oninput" placeholder="######" />
+							<div class="input-group-append">
+								<button class="btn btn-outline-secondary" @onclick="DirectJoinLobbyButton">Join</button>
+							</div>
+						</div>
 
-					<thead>
-						<tr>
-							<td>Name</td>
-							<td>Players</td>
-							<td>Join</td>
-						</tr>
-					</thead>
-					<tbody>
-						@if (Client.View.Lobbies != null)
-						{
-							@if (Client?.View?.Lobbies != null
-						  && Client.View.Lobbies.Count > 0)
+						<div class="form-group form-group text-right">
+							<button class="btn btn-outline-secondary" @onclick="CreateLobbyButton">Create Lobby</button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12 col-md-9 col-lg-9 mx-auto">
+				<div class="card card-signin my-5">
+					<table class="table">
+
+						<thead>
+							<tr>
+								<td>Name</td>
+								<td>Players</td>
+								<td>Join</td>
+							</tr>
+						</thead>
+						<tbody>
+							@if (Client.View.Lobbies != null)
 							{
-								@foreach (var lobby in Client.View.Lobbies)
+								@if (Client?.View?.Lobbies != null
+					   && Client.View.Lobbies.Count > 0)
+								{
+									@foreach (var lobby in Client.View.Lobbies)
+									{
+										<tr>
+											<td>@lobby.Name <sub>(@lobby.Key)</sub></td>
+											<td>@(lobby.CurrentPlayers)/@(lobby.MaxPlayers)</td>
+											<td>
+												<button class="btn btn-primary" @onclick="() => JoinLobbyButton(lobby.Key)">Join</button>
+											</td>
+										</tr>
+									}
+								}
+								else
 								{
 									<tr>
-										<td>@lobby.Name <sub>(@lobby.Key)</sub></td>
-										<td>@(lobby.CurrentPlayers)/@(lobby.MaxPlayers)</td>
-										<td>
-											<button class="btn btn-primary" @onclick="() => JoinLobbyButton(lobby.Key)">Join</button>
+										<td colspan="3">
+											<sub>There are current no lobbies.</sub>
 										</td>
 									</tr>
 								}
@@ -59,23 +88,20 @@
 							{
 								<tr>
 									<td colspan="3">
-										<sub>There are current no lobbies.</sub>
+										<sub>Loading...</sub>
 									</td>
 								</tr>
 							}
-						}
-						else
-						{
-							<tr>
-								<td colspan="3">
-									<sub>Loading...</sub>
-								</td>
-							</tr>
-						}
-					</tbody>
+						</tbody>
 
-				</table>
+					</table>
+				</div>
 			</div>
 		</div>
-	</div>
+	}
+
+	<div style="height: 128px"></div>
+
+	<UserGuide />
+
 </div>

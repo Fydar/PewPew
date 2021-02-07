@@ -79,6 +79,11 @@ namespace PewPew.WebApp.Client.Pages
 
 		protected override Task OnInitializedAsync()
 		{
+			if (Client.View?.Lobby == null)
+			{
+				NavigationManager.NavigateTo("/");
+			}
+
 			Client.OnProcedureApplied += OnProcedureApplied;
 
 			return Task.CompletedTask;
