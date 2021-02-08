@@ -1,5 +1,5 @@
-﻿using PewPew.WebApp.Shared.Model;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using PewPew.WebApp.Shared.Model;
 
 namespace PewPew.WebApp.Shared.View
 {

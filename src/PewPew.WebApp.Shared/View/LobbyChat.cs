@@ -1,5 +1,5 @@
-﻿using PewPew.WebApp.Shared.Model;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using PewPew.WebApp.Shared.Model;
 using System;
 using System.Diagnostics;
 

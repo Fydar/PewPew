@@ -1,9 +1,9 @@
-﻿using HuskyNet.WebClient.Services;
-using PewPew.WebApp.Shared.Commands;
-using PewPew.WebApp.Shared.Procedures;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using PewPew.WebApp.Client.Services;
+using PewPew.WebApp.Shared.Commands;
+using PewPew.WebApp.Shared.Procedures;
 using System;
 using System.Threading.Tasks;
 

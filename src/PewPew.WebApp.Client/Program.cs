@@ -1,6 +1,6 @@
-using HuskyNet.WebClient.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using PewPew.WebApp.Client.Services;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
