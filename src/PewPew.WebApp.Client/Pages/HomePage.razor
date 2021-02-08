@@ -44,57 +44,58 @@
 			</div>
 		</div>
 
-		<div class="row">
-			<div class="col-sm-12 col-md-9 col-lg-9 mx-auto">
-				<div class="card card-signin my-5">
-					<table class="table">
+		<div class="my-5">
+			<table class="table table-bordered table-hover">
 
-						<thead>
-							<tr>
-								<td>Name</td>
-								<td>Players</td>
-								<td>Join</td>
-							</tr>
-						</thead>
-						<tbody>
-							@if (Client.View.Lobbies != null)
-							{
-								@if (Client?.View?.Lobbies != null
-					   && Client.View.Lobbies.Count > 0)
-								{
-									@foreach (var lobby in Client.View.Lobbies)
-									{
-										<tr>
-											<td>@lobby.Name <sub>(@lobby.Key)</sub></td>
-											<td>@(lobby.CurrentPlayers)/@(lobby.MaxPlayers)</td>
-											<td>
-												<button class="btn btn-primary" @onclick="() => JoinLobbyButton(lobby.Key)">Join</button>
-											</td>
-										</tr>
-									}
-								}
-								else
-								{
-									<tr>
-										<td colspan="3">
-											<sub>There are current no lobbies.</sub>
-										</td>
-									</tr>
-								}
-							}
-							else
+				<thead>
+					<tr>
+						<td>Name</td>
+						<td>Code</td>
+						<td>Players</td>
+						<td>Join</td>
+					</tr>
+				</thead>
+				<tbody>
+					@if (Client.View.Lobbies != null)
+					{
+						@if (Client?.View?.Lobbies != null && Client.View.Lobbies.Count > 0)
+						{
+							@foreach (var lobby in Client.View.Lobbies)
 							{
 								<tr>
-									<td colspan="3">
-										<sub>Loading...</sub>
+									<td>
+										@lobby.Name
+									</td>
+									<td style="color: #999;">
+										@lobby.Key
+									</td>
+									<td>@(lobby.CurrentPlayers)/@(lobby.MaxPlayers)</td>
+									<td>
+										<button class="btn btn-outline-secondary" @onclick="() => JoinLobbyButton(lobby.Key)">Join</button>
 									</td>
 								</tr>
 							}
-						</tbody>
+						}
+						else
+						{
+							<tr>
+								<td colspan="4">
+									<sub>There are current no lobbies.</sub>
+								</td>
+							</tr>
+						}
+					}
+					else
+					{
+						<tr>
+							<td colspan="4">
+								<sub>Loading...</sub>
+							</td>
+						</tr>
+					}
+				</tbody>
 
-					</table>
-				</div>
-			</div>
+			</table>
 		</div>
 	}
 
