@@ -51,7 +51,7 @@
 						@if (YourTeam != teamId)
 						{
 							<div class="input-group">
-								<button class="btn btn-primary" @onclick="() => JoinTeamButton(teamId)">Join Team @(teamId + 1)</button>
+								<button class="btn btn-outline-secondary" style="width: 100%;" @onclick="() => JoinTeamButton(teamId)">Join <b>Team @(teamId + 1)</b></button>
 							</div>
 						}
 					</div>
@@ -59,7 +59,7 @@
 			</div>
 
 			<div class="row my-5">
-				<button class="btn btn-primary" @onclick="this.LaunchGameButton">Launch Game</button>
+				<button class="btn btn-outline-primary" @onclick="this.LaunchGameButton">Launch Game</button>
 			</div>
 
 			<h3>Spectators</h3>
@@ -89,7 +89,7 @@
 			</div>
 
 			<div class="input-group">
-				<button class="btn btn-primary" @onclick="() => JoinTeamButton(-1)">Spectate</button>
+				<button class="btn btn-outline-secondary" @onclick="() => JoinTeamButton(-1)">Spectate</button>
 			</div>
 		}
 		else
