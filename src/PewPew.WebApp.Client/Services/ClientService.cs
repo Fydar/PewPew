@@ -1,17 +1,17 @@
-﻿using PewPew.WebApp.Shared.Commands;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using PewPew.WebApp.Shared.Commands;
 using PewPew.WebApp.Shared.Model;
 using PewPew.WebApp.Shared.Procedures;
 using PewPew.WebApp.Shared.Services.Network;
 using PewPew.WebApp.Shared.View;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HuskyNet.WebClient.Services
+namespace PewPew.WebApp.Client.Services
 {
 	public class ClientService
 	{

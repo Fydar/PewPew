@@ -1,10 +1,10 @@
-﻿using PewPew.WebApp.Server.Utility;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PewPew.WebApp.Server.Utility;
 using Serilog;
 using Serilog.Events;
 using System;
