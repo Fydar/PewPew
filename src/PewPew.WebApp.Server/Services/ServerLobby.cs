@@ -15,17 +15,27 @@ namespace PewPew.WebApp.Server.Services
 {
 	public class ServerLobby : ICommandProcessor
 	{
+		private DateTimeOffset lastLobbyStart;
+
 		private readonly Mutex viewMutex;
 		private readonly JsonSerializer serializer;
 		private readonly InstanceViewCommandProcessor commandProcessor;
 		private readonly ServerNetworkedView view;
 		private readonly List<GameClientConnection> players;
+		private readonly ServerPortal serverPortal;
 		private readonly ServerFrontend serverFrontend;
 
 		public LobbyStatus Status { get; }
+		public string LobbyKey { get; }
 
-		public ServerLobby(ServerFrontend serverFrontend, string lobbyKey)
+		public ServerLobby(ServerPortal serverPortal, ServerFrontend serverFrontend, string lobbyKey)
 		{
+			this.serverPortal = serverPortal;
+			this.serverFrontend = serverFrontend;
+			LobbyKey = lobbyKey;
+
+			lastLobbyStart = DateTimeOffset.UtcNow;
+
 			Status = new LobbyStatus()
 			{
 				Key = lobbyKey,
@@ -48,7 +58,6 @@ namespace PewPew.WebApp.Server.Services
 			commandProcessor = new InstanceViewCommandProcessor(view);
 
 			_ = GameTickerWorker();
-			this.serverFrontend = serverFrontend;
 		}
 
 		public void AddPlayer(GameClientConnection connection)
@@ -98,10 +107,26 @@ namespace PewPew.WebApp.Server.Services
 			{
 				await Task.Delay(1000 / 4);
 
-				viewMutex.WaitOne();
-				var procedures = commandProcessor.HandleGameTick().ToList();
-				ApplyViewProcedures(procedures, null);
-				viewMutex.ReleaseMutex();
+				if (DateTimeOffset.UtcNow - lastLobbyStart > TimeSpan.FromMinutes(10))
+				{
+					viewMutex.WaitOne();
+					ApplyViewProcedures(new ScopedNetworkedViewProcedure[]
+					{
+						new ScopedNetworkedViewProcedure(ProcedureScope.Broadcast, new LobbyCloseProcedure())
+					});
+					viewMutex.ReleaseMutex();
+
+					serverPortal.CloseLobby(this);
+					return;
+				}
+				else
+				{
+
+					viewMutex.WaitOne();
+					var procedures = commandProcessor.HandleGameTick().ToList();
+					ApplyViewProcedures(procedures, null);
+					viewMutex.ReleaseMutex();
+				}
 			}
 		}
 
@@ -113,6 +138,11 @@ namespace PewPew.WebApp.Server.Services
 				if (sender == null && scopedProcedure.Scope == ProcedureScope.Reply)
 				{
 					throw new InvalidOperationException("Cannot reply when procedure is being applied from game tick");
+				}
+
+				if (scopedProcedure.Procedure is GameEndProcedure)
+				{
+					lastLobbyStart = DateTimeOffset.UtcNow;
 				}
 
 				try

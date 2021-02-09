@@ -84,7 +84,11 @@ namespace PewPew.WebApp.Client.Pages
 		{
 			Client.OnProcedureApplied += OnProcedureApplied;
 
-			if (Client.View?.Lobby?.World == null)
+			if (Client.View?.Lobby == null)
+			{
+				NavigationManager.NavigateTo("/");
+			}
+			else if (Client.View?.Lobby?.World == null)
 			{
 				NavigationManager.NavigateTo("/lobby");
 			}
