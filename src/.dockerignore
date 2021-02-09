@@ -1,6 +1,6 @@
 *
 
-!LostInSpace.WebApp.Server/bin/Release/net5.0/**
+!PewPew.WebApp.Server/bin/Release/net5.0/**
 
 **/.classpath
 **/.dockerignore
