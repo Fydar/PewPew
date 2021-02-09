@@ -16,7 +16,7 @@ namespace PewPew.WebApp.Server.Services
 		private readonly JsonSerializer serializer;
 		private readonly List<GameClientConnection> updateSubscribers;
 
-		private bool isDirty = false;
+		public bool IsDirty { get; set; } = false;
 		private byte[] lastUpdate;
 
 		public ServerFrontend(
@@ -36,9 +36,9 @@ namespace PewPew.WebApp.Server.Services
 			{
 				await Task.Delay(1000 * 1, cancellationToken);
 
-				if (isDirty)
+				if (IsDirty)
 				{
-					isDirty = false;
+					IsDirty = false;
 					var lobbies = serverPortal.AllLobbies();
 					var lobbyStatuses = new List<LobbyStatus>(lobbies.Select(l => l.Status));
 
@@ -58,7 +58,7 @@ namespace PewPew.WebApp.Server.Services
 
 		public void AddPlayer(GameClientConnection connection)
 		{
-			isDirty = true;
+			IsDirty = true;
 			updateSubscribers.Add(connection);
 
 			if (lastUpdate != null)
@@ -69,19 +69,19 @@ namespace PewPew.WebApp.Server.Services
 
 		public void RemovePlayer(GameClientConnection connection)
 		{
-			isDirty = true;
+			IsDirty = true;
 			updateSubscribers.Remove(connection);
 		}
 
 		public void RecieveCommandFromPlayer(GameClientConnection connection, ClientCommand clientCommand)
 		{
-			isDirty = true;
+			IsDirty = true;
 
 			switch (clientCommand)
 			{
 				case FrontendCreateLobbyCommand:
 				{
-					isDirty = true;
+					IsDirty = true;
 
 					var lobby = serverPortal.CreateLobby();
 
@@ -100,7 +100,7 @@ namespace PewPew.WebApp.Server.Services
 
 					if (serverPortal.TryGetLobby(command.LobbyKey, out var lobby))
 					{
-						isDirty = true;
+						IsDirty = true;
 
 						connection.CommandProcessor.RemovePlayer(connection);
 						connection.CommandProcessor = lobby;

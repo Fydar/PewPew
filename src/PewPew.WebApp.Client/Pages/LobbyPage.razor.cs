@@ -129,6 +129,11 @@ namespace PewPew.WebApp.Client.Pages
 		{
 			_ = InvokeAsync(StateHasChanged);
 
+			if (Client.View?.Lobby == null)
+			{
+				NavigationManager.NavigateTo("/");
+			}
+
 			if (Client.View?.Lobby?.World != null)
 			{
 				NavigationManager.NavigateTo("/navigate");

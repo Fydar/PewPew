@@ -21,11 +21,17 @@ namespace PewPew.WebApp.Server.Services
 			return lobbies.TryGetValue(lobbyKey, out lobby);
 		}
 
+		public void CloseLobby(ServerLobby lobby)
+		{
+			Frontend.IsDirty = true;
+			lobbies.Remove(lobby.LobbyKey, out _);
+		}
+
 		public ServerLobby CreateLobby()
 		{
 			string lobbyKey = LobbyIdGenerator.GenerateLobbyKey();
 
-			var lobby = new ServerLobby(Frontend, lobbyKey);
+			var lobby = new ServerLobby(this, Frontend, lobbyKey);
 
 			if (lobbies.TryAdd(lobbyKey, lobby))
 			{
