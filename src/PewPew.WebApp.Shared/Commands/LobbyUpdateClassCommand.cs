@@ -2,6 +2,6 @@
 {
 	public class LobbyUpdateClassCommand : ClientCommand
 	{
-		public string ShipClass { get; set; }
+		public string ShipClass { get; set; } = string.Empty;
 	}
 }

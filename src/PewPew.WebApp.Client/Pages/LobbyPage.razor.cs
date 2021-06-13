@@ -6,22 +6,26 @@ using PewPew.WebApp.Shared.Commands;
 using PewPew.WebApp.Shared.Procedures;
 using PewPew.WebApp.Shared.View;
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace PewPew.WebApp.Client.Pages
 {
 	public partial class LobbyPage : ComponentBase, IDisposable
 	{
-		[Inject] protected ClientService Client { get; set; }
-		[Inject] protected NavigationManager NavigationManager { get; set; }
-		[Inject] protected IJSRuntime JsRuntime { get; set; }
+		[Inject] protected ClientService? Client { get; set; }
+		[Inject] protected NavigationManager? NavigationManager { get; set; }
+		[Inject] protected IJSRuntime? JsRuntime { get; set; }
 
-		private string nameCache = null;
+		private string? nameCache = null;
 
 		public string YourName
 		{
 			get
 			{
+				EnsureValidState();
+
 				if (nameCache != null)
 				{
 					return nameCache;
@@ -47,6 +51,8 @@ namespace PewPew.WebApp.Client.Pages
 		{
 			get
 			{
+				EnsureValidState();
+
 				if (Client.View?.Client == null
 					|| Client.View?.Lobby == null)
 				{
@@ -54,7 +60,7 @@ namespace PewPew.WebApp.Client.Pages
 				}
 
 				Client.View.Lobby.Players.TryGetValue(Client.View.Client.ClientId, out var result);
-				return result.ShipClass ?? ShipTypes.Scout;
+				return result?.ShipClass ?? ShipTypes.Scout;
 			}
 			set
 			{
@@ -66,6 +72,8 @@ namespace PewPew.WebApp.Client.Pages
 		{
 			get
 			{
+				EnsureValidState();
+
 				if (Client.View?.Client == null
 					|| Client.View?.Lobby == null)
 				{
@@ -79,6 +87,8 @@ namespace PewPew.WebApp.Client.Pages
 
 		protected override Task OnInitializedAsync()
 		{
+			EnsureValidState();
+
 			if (Client.View?.Lobby == null)
 			{
 				NavigationManager.NavigateTo("/");
@@ -91,6 +101,8 @@ namespace PewPew.WebApp.Client.Pages
 
 		public void UpdateDisplayName(string newDisplayName)
 		{
+			EnsureValidState();
+
 			_ = Client.SendCommandAsync(new LobbyUpdateDisplayNameCommand()
 			{
 				DisplayName = newDisplayName
@@ -99,6 +111,8 @@ namespace PewPew.WebApp.Client.Pages
 
 		public void UpdateShipClass(string newShipClass)
 		{
+			EnsureValidState();
+
 			_ = Client.SendCommandAsync(new LobbyUpdateClassCommand()
 			{
 				ShipClass = newShipClass
@@ -107,6 +121,8 @@ namespace PewPew.WebApp.Client.Pages
 
 		public void JoinTeamButton(int teamId)
 		{
+			EnsureValidState();
+
 			_ = Client.SendCommandAsync(new LobbyUpdateTeamCommand()
 			{
 				NewTeamId = teamId
@@ -115,6 +131,8 @@ namespace PewPew.WebApp.Client.Pages
 
 		public void LaunchGameButton(MouseEventArgs mouseEventArgs)
 		{
+			EnsureValidState();
+
 			_ = Client.SendCommandAsync(new LaunchGameCommand()
 			{
 			});
@@ -122,11 +140,15 @@ namespace PewPew.WebApp.Client.Pages
 
 		public void Dispose()
 		{
+			EnsureValidState();
+
 			Client.OnProcedureApplied -= OnProcedureApplied;
 		}
 
-		public void OnProcedureApplied(NetworkedViewProcedure networkedViewProcedure)
+		public void OnProcedureApplied(NetworkedViewProcedure? networkedViewProcedure)
 		{
+			EnsureValidState();
+
 			_ = InvokeAsync(StateHasChanged);
 
 			if (Client.View?.Lobby == null)
@@ -137,6 +159,28 @@ namespace PewPew.WebApp.Client.Pages
 			if (Client.View?.Lobby?.World != null)
 			{
 				NavigationManager.NavigateTo("/navigate");
+			}
+		}
+
+		[MemberNotNull(nameof(Client), nameof(NavigationManager), nameof(JsRuntime))]
+		private void EnsureValidState([CallerMemberName] string callerMemberName = "")
+		{
+			if (Client == null)
+			{
+				throw CreateMissingPropertyException(nameof(Client));
+			}
+			if (NavigationManager == null)
+			{
+				throw CreateMissingPropertyException(nameof(NavigationManager));
+			}
+			if (JsRuntime == null)
+			{
+				throw CreateMissingPropertyException(nameof(JsRuntime));
+			}
+
+			Exception CreateMissingPropertyException(string propertyName)
+			{
+				return new InvalidOperationException($"Cannot execute '{callerMemberName}' on {nameof(LobbyPage)}' as the property {propertyName} has not been injected.");
 			}
 		}
 	}

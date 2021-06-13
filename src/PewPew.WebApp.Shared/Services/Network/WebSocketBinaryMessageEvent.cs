@@ -5,7 +5,7 @@ namespace PewPew.WebApp.Shared.Services.Network
 {
 	public class WebSocketBinaryMessageEvent : IWebSocketEvent
 	{
-		internal byte[] rentedArray;
+		private readonly byte[] rentedArray;
 
 		public DateTimeOffset StartTime { get; internal set; }
 		public DateTimeOffset EndTime { get; internal set; }
@@ -13,9 +13,15 @@ namespace PewPew.WebApp.Shared.Services.Network
 
 		public TimeSpan Elapsed => EndTime - StartTime;
 
+		internal WebSocketBinaryMessageEvent(byte[] rentedArray)
+		{
+			this.rentedArray = rentedArray;
+		}
+
 		void IDisposable.Dispose()
 		{
 			ArrayPool<byte>.Shared.Return(rentedArray);
+			GC.SuppressFinalize(this);
 		}
 	}
 }

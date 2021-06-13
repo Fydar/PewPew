@@ -7,7 +7,7 @@ namespace PewPew.WebApp.Shared.Utility
 {
 	public static class ExceptionExtensions
 	{
-		private static readonly Regex lineInterpreter = new Regex("^(at .*?) in (.*):line (\\d+)$");
+		private static readonly Regex lineInterpreter = new("^(at .*?) in (.*):line (\\d+)$");
 
 		public static void Format(this Exception exception, StringBuilder stringBuilder)
 		{
@@ -20,7 +20,7 @@ namespace PewPew.WebApp.Shared.Utility
 			stringBuilder.Append('\n');
 
 			// Example: "   at Namespace.Type.Method() (at Path/File.cs:130)"
-			string stackTrace = exception.StackTrace;
+			string stackTrace = exception.StackTrace ?? "";
 			if (stackTrace != null)
 			{
 				string[] stackTraceLines = stackTrace.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -40,7 +40,7 @@ namespace PewPew.WebApp.Shared.Utility
 						}
 					}
 					string stackLine = FormatStackLine(line);
-					if (stackLine != null)
+					if (!string.IsNullOrEmpty(stackLine))
 					{
 						stringBuilder.Append("   ");
 						stringBuilder.Append(stackLine);
@@ -59,7 +59,7 @@ namespace PewPew.WebApp.Shared.Utility
 
 					stringBuilder.Append("Inner Exception #");
 					stringBuilder.Append(i);
-					stringBuilder.Append(" ");
+					stringBuilder.Append(' ');
 					innerException.Format(stringBuilder);
 				}
 			}
@@ -67,7 +67,7 @@ namespace PewPew.WebApp.Shared.Utility
 			{
 				var targetInvocationException = (TargetInvocationException)exception;
 
-				targetInvocationException.InnerException.Format(stringBuilder);
+				targetInvocationException.InnerException?.Format(stringBuilder);
 			}
 			else
 			{
@@ -101,14 +101,14 @@ namespace PewPew.WebApp.Shared.Utility
 				line.StartsWith("at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw", StringComparison.Ordinal) ||
 				line.StartsWith("at System.Threading.Tasks.TaskFactory", StringComparison.Ordinal))
 			{
-				return null;
+				return string.Empty;
 			}
 
 			// Remove Stack Lines from the Startup.cs wrapping
 			if (line.StartsWith("at Microsoft.AspNetCore.Hosting.", StringComparison.Ordinal)
 				|| line.StartsWith("at Microsoft.Extensions.Hosting.", StringComparison.Ordinal))
 			{
-				return null;
+				return string.Empty;
 			}
 
 			// Normalise calls in callstack
@@ -123,8 +123,8 @@ namespace PewPew.WebApp.Shared.Utility
 				string typeName = method.Substring(0, methodSeperator);
 				int typeSeperator = typeName.LastIndexOf('.');
 				string shortName = typeSeperator == -1
-					? method.Substring(3)
-					: method.Substring(typeSeperator + 1);
+					? method[3..]
+					: method[(typeSeperator + 1)..];
 
 				return $"at {shortName} in {filePath}:{lineNumber}";
 			}

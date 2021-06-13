@@ -23,7 +23,7 @@ namespace PewPew.WebApp.Server.Game
 
 		public IEnumerable<ScopedNetworkedViewProcedure> HandleGameTick()
 		{
-			if (view.Lobby.World?.Ships == null)
+			if (view.Lobby?.World?.Ships == null)
 			{
 				yield break;
 			}
@@ -166,15 +166,9 @@ namespace PewPew.WebApp.Server.Game
 				{
 					var direction = targetPosition - ship.Position;
 
-					float targetAngle;
-					if (direction.Magnitude > 4.0f)
-					{
-						targetAngle = Vector2.SignedAngle(Vector2.up, direction.Normalized);
-					}
-					else
-					{
-						targetAngle = ship.Rotation;
-					}
+					float targetAngle = direction.Magnitude > 4.0f
+						? Vector2.SignedAngle(Vector2.up, direction.Normalized)
+						: ship.Rotation;
 
 					float currentAngle = Mathf.MoveTowardsAngle(ship.Rotation, targetAngle, ship.RotationSpeed);
 
@@ -283,19 +277,10 @@ namespace PewPew.WebApp.Server.Game
 				}
 			);
 
-			int playerTeam;
+			int teamACount = view.Lobby?.Players.Count(p => p.Value.TeamId == 0) ?? 0;
+			int teamBCount = view.Lobby?.Players.Count(p => p.Value.TeamId == 1) ?? 0;
 
-			int teamACount = view.Lobby.Players.Count(p => p.Value.TeamId == 0);
-			int teamBCount = view.Lobby.Players.Count(p => p.Value.TeamId == 1);
-
-			if (teamACount <= teamBCount)
-			{
-				playerTeam = 0;
-			}
-			else
-			{
-				playerTeam = 1;
-			}
+			int playerTeam = teamACount <= teamBCount ? 0 : 1;
 
 			yield return new ScopedNetworkedViewProcedure(
 				ProcedureScope.Broadcast,
@@ -338,6 +323,11 @@ namespace PewPew.WebApp.Server.Game
 			{
 				case LaunchGameCommand:
 				{
+					if (view.Lobby == null)
+					{
+						break;
+					}
+
 					var world = new GameplayWorld();
 
 					foreach (var player in view.Lobby.Players)
@@ -465,6 +455,11 @@ namespace PewPew.WebApp.Server.Game
 
 				case UseAbilityCommand command:
 				{
+					if (view.Lobby?.World == null)
+					{
+						break;
+					}
+
 					var ship = view.Lobby.World.Ships[connection.Identifier];
 
 					for (int i = 0; i < ship.BarrageProjectiles; i++)

@@ -6,7 +6,7 @@
 	public class LobbyPublicPlayerProfile
 	{
 		public int TeamId { get; set; }
-		public string DisplayName { get; set; }
+		public string DisplayName { get; set; } = string.Empty;
 		public string ShipClass { get; set; } = ShipTypes.Scout;
 	}
 }

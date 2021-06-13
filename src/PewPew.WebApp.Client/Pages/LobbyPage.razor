@@ -6,7 +6,7 @@
 
 		<div class="my-5"></div>
 
-		@if (Client.View?.Lobby != null)
+		@if (Client?.View?.Lobby != null)
 		{
 			<h3>Players</h3>
 
@@ -29,7 +29,7 @@
 								}
 
 								<div class="input-group">
-									@if (player.Key == Client.View?.Client.ClientId)
+									@if (player.Key == Client.View?.Client?.ClientId)
 									{
 										<input class="form-control col-sm-8" @bind="YourName" @bind:event="oninput" />
 										<select class="form-select col-sm-4" @bind="YourClass">
@@ -75,7 +75,7 @@
 						}
 
 						<div class="input-group">
-							@if (player.Key == Client.View.Client.ClientId)
+							@if (player.Key == Client?.View?.Client?.ClientId)
 							{
 								<input class="form-control" @bind="YourName" @bind:event="oninput" />
 							}

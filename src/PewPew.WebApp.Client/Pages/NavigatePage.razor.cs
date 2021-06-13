@@ -7,20 +7,31 @@ using PewPew.WebApp.Shared.Model;
 using PewPew.WebApp.Shared.Procedures;
 using PewPew.WebApp.Shared.View;
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace PewPew.WebApp.Client.Pages
 {
 	public partial class NavigatePage : ComponentBase, IDisposable
 	{
-		[Inject] protected ClientService Client { get; set; }
-		[Inject] protected NavigationManager NavigationManager { get; set; }
-		[Inject] protected IJSRuntime JsRuntime { get; set; }
+		public enum NavigateInputMode
+		{
+			None,
+			SetDestination,
+			Ability,
+		}
+
+		[Inject] protected ClientService? Client { get; set; }
+		[Inject] protected NavigationManager? NavigationManager { get; set; }
+		[Inject] protected IJSRuntime? JsRuntime { get; set; }
 
 		public NavigateInputMode InputMode
 		{
 			get
 			{
+				EnsureValidState();
+
 				if (Client.View?.Client == null)
 				{
 					return NavigateInputMode.None;
@@ -47,21 +58,32 @@ namespace PewPew.WebApp.Client.Pages
 		{
 			get
 			{
+				EnsureValidState();
+
+				if (Client.View?.Client == null)
+				{
+					return -1;
+				}
+
 				return GetTeamId(Client.View.Client.ClientId);
 			}
 		}
 
 		public int GetTeamId(LocalId localId)
 		{
+			EnsureValidState();
+
 			return Client.View?.Lobby?.Players[localId].TeamId ?? -1;
 		}
 
 		public LocalId? CurrentlySelected { get; set; }
 
-		public GameplayShip YourShip
+		public GameplayShip? YourShip
 		{
 			get
 			{
+				EnsureValidState();
+
 				if (Client.View?.Client == null
 					|| Client.View?.Lobby?.World == null)
 				{
@@ -73,15 +95,10 @@ namespace PewPew.WebApp.Client.Pages
 			}
 		}
 
-		public enum NavigateInputMode
-		{
-			None,
-			SetDestination,
-			Ability,
-		}
-
 		protected override Task OnInitializedAsync()
 		{
+			EnsureValidState();
+
 			Client.OnProcedureApplied += OnProcedureApplied;
 
 			if (Client.View?.Lobby == null)
@@ -98,6 +115,8 @@ namespace PewPew.WebApp.Client.Pages
 
 		protected override async Task OnAfterRenderAsync(bool firstRender)
 		{
+			EnsureValidState();
+
 			if (firstRender)
 			{
 				await JsRuntime.InvokeAsync<object>("PanAndZoom.Start");
@@ -117,10 +136,13 @@ namespace PewPew.WebApp.Client.Pages
 
 		public void MapOnClick(MouseEventArgs mouseEventArgs)
 		{
+			EnsureValidState();
 		}
 
 		public void MapOnMouseUp(MouseEventArgs mouseEventArgs)
 		{
+			EnsureValidState();
+
 			if (InputMode == NavigateInputMode.SetDestination)
 			{
 				if (mouseEventArgs.Button == 2)
@@ -147,15 +169,20 @@ namespace PewPew.WebApp.Client.Pages
 
 		public void MapOnTouchEnd(TouchEventArgs touchEventArgs)
 		{
+			EnsureValidState();
 		}
 
 		public void Dispose()
 		{
+			EnsureValidState();
+
 			Client.OnProcedureApplied -= OnProcedureApplied;
 		}
 
-		public void OnProcedureApplied(NetworkedViewProcedure networkedViewProcedure)
+		public void OnProcedureApplied(NetworkedViewProcedure? networkedViewProcedure)
 		{
+			EnsureValidState();
+
 			if (networkedViewProcedure is GameTickProcedure)
 			{
 				_ = InvokeAsync(StateHasChanged);
@@ -164,6 +191,28 @@ namespace PewPew.WebApp.Client.Pages
 			if (Client.View?.Lobby?.World == null)
 			{
 				NavigationManager.NavigateTo("/lobby");
+			}
+		}
+
+		[MemberNotNull(nameof(Client), nameof(NavigationManager), nameof(JsRuntime))]
+		private void EnsureValidState([CallerMemberName] string callerMemberName = "")
+		{
+			if (Client == null)
+			{
+				throw CreateMissingPropertyException(nameof(Client));
+			}
+			if (NavigationManager == null)
+			{
+				throw CreateMissingPropertyException(nameof(NavigationManager));
+			}
+			if (JsRuntime == null)
+			{
+				throw CreateMissingPropertyException(nameof(JsRuntime));
+			}
+
+			Exception CreateMissingPropertyException(string propertyName)
+			{
+				return new InvalidOperationException($"Cannot execute '{callerMemberName}' on {nameof(LobbyPage)}' as the property {propertyName} has not been injected.");
 			}
 		}
 	}

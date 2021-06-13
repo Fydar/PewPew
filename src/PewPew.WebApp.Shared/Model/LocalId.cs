@@ -11,15 +11,15 @@ namespace PewPew.WebApp.Shared.Model
 	public readonly struct LocalId : IEquatable<LocalId>
 	{
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private static readonly Random random = new Random();
+		private static readonly Random random = new();
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public static readonly LocalId None = new LocalId(0);
+		public static readonly LocalId None = new(0);
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private readonly ulong id;
 
-		public LocalId(string id)
+		public LocalId(string? id)
 		{
 			if (string.IsNullOrWhiteSpace(id))
 			{
@@ -29,7 +29,7 @@ namespace PewPew.WebApp.Shared.Model
 
 			if (id.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
 			{
-				id = id.Substring(2);
+				id = id[2..];
 			}
 			this.id = ulong.Parse(id, NumberStyles.HexNumber);
 		}
@@ -39,7 +39,7 @@ namespace PewPew.WebApp.Shared.Model
 			this.id = id;
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			return obj is LocalId id && Equals(id);
 		}
@@ -99,14 +99,14 @@ namespace PewPew.WebApp.Shared.Model
 			return objectType == typeof(LocalId);
 		}
 
-		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+		public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
 		{
-			writer.WriteValue(value.ToString());
+			writer.WriteValue(value?.ToString());
 		}
 
-		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+		public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
 		{
-			return new LocalId(reader.Value.ToString());
+			return new LocalId(reader.Value?.ToString());
 		}
 	}
 
@@ -119,7 +119,7 @@ namespace PewPew.WebApp.Shared.Model
 
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
-			string stringValue = value as string;
+			string? stringValue = value as string;
 
 			return !string.IsNullOrEmpty(stringValue)
 				? new LocalId(stringValue)
@@ -130,7 +130,7 @@ namespace PewPew.WebApp.Shared.Model
 		{
 			var localId = (LocalId)value;
 
-			return localId != null && destinationType == typeof(string)
+			return destinationType == typeof(string)
 				? localId.ToString()
 				: base.ConvertTo(context, culture, value, destinationType);
 		}

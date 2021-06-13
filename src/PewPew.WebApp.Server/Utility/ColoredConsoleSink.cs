@@ -29,7 +29,7 @@ namespace PewPew.WebApp.Server.Utility
 		/// <see cref="LogEventPropertyValue"/>s on the event.
 		/// </summary>
 		/// <param name="valueFormatter">A value formatter, or null.</param>
-		public ColoredConsoleSink(JsonValueFormatter valueFormatter = null)
+		public ColoredConsoleSink(JsonValueFormatter? valueFormatter = null)
 		{
 			this.valueFormatter = valueFormatter ?? new JsonValueFormatter(typeTagName: "$type");
 		}

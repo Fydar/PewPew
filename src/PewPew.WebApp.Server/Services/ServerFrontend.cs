@@ -17,7 +17,7 @@ namespace PewPew.WebApp.Server.Services
 		private readonly List<GameClientConnection> updateSubscribers;
 
 		public bool IsDirty { get; set; } = false;
-		private byte[] lastUpdate;
+		private byte[]? lastUpdate;
 
 		public ServerFrontend(
 			ServerPortal serverPortal)
@@ -85,7 +85,7 @@ namespace PewPew.WebApp.Server.Services
 
 					var lobby = serverPortal.CreateLobby();
 
-					connection.CommandProcessor.RemovePlayer(connection);
+					connection.CommandProcessor?.RemovePlayer(connection);
 					connection.CommandProcessor = lobby;
 					connection.CommandProcessor.AddPlayer(connection);
 
@@ -102,7 +102,7 @@ namespace PewPew.WebApp.Server.Services
 					{
 						IsDirty = true;
 
-						connection.CommandProcessor.RemovePlayer(connection);
+						connection.CommandProcessor?.RemovePlayer(connection);
 						connection.CommandProcessor = lobby;
 						connection.CommandProcessor.AddPlayer(connection);
 					}

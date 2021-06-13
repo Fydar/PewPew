@@ -9,15 +9,15 @@ namespace PewPew.WebApp.Server.Pages
 	[IgnoreAntiforgeryToken]
 	public class ErrorModel : PageModel
 	{
-		public string RequestId { get; set; }
+		public string RequestId { get; set; } = string.Empty;
 
 		public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-		private readonly ILogger<ErrorModel> _logger;
+		private readonly ILogger<ErrorModel> logger;
 
 		public ErrorModel(ILogger<ErrorModel> logger)
 		{
-			_logger = logger;
+			this.logger = logger;
 		}
 
 		public void OnGet()
