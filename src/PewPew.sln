@@ -9,12 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PewPew.WebApp.Server", "Pew
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PewPew.WebApp.Shared", "PewPew.WebApp.Shared\PewPew.WebApp.Shared.csproj", "{AF2FF210-F4F6-4F71-9864-AD723F8FAC40}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LettuceEncrypt", "..\..\..\LettuceEncrypt\src\LettuceEncrypt\LettuceEncrypt.csproj", "{FA77ACDE-DCBD-4A1D-9C02-18E6D609A721}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "McMaster.AspNetCore.Kestrel.Certificates", "..\..\..\LettuceEncrypt\src\Kestrel.Certificates\McMaster.AspNetCore.Kestrel.Certificates.csproj", "{878B531B-9876-477C-807D-77B9A719B86A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdParty", "3rdParty", "{12696DA5-3243-4EAF-BAB1-91007BCC9F71}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,21 +27,9 @@ Global
 		{AF2FF210-F4F6-4F71-9864-AD723F8FAC40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF2FF210-F4F6-4F71-9864-AD723F8FAC40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF2FF210-F4F6-4F71-9864-AD723F8FAC40}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FA77ACDE-DCBD-4A1D-9C02-18E6D609A721}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA77ACDE-DCBD-4A1D-9C02-18E6D609A721}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FA77ACDE-DCBD-4A1D-9C02-18E6D609A721}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FA77ACDE-DCBD-4A1D-9C02-18E6D609A721}.Release|Any CPU.Build.0 = Release|Any CPU
-		{878B531B-9876-477C-807D-77B9A719B86A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{878B531B-9876-477C-807D-77B9A719B86A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{878B531B-9876-477C-807D-77B9A719B86A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{878B531B-9876-477C-807D-77B9A719B86A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{FA77ACDE-DCBD-4A1D-9C02-18E6D609A721} = {12696DA5-3243-4EAF-BAB1-91007BCC9F71}
-		{878B531B-9876-477C-807D-77B9A719B86A} = {12696DA5-3243-4EAF-BAB1-91007BCC9F71}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FAEB5F72-95EC-40EA-B57A-9CA7F6891EDF}
