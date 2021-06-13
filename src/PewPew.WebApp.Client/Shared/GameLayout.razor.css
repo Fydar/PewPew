@@ -1,12 +1,8 @@
-
-
 .page {
 	margin: 0;
 	padding: 0;
 	height: 100vh;
-
 	background-color: #121212;
-
 	display: grid;
 	grid-template-rows: auto;
 	grid-template-areas: 'pagebody';
@@ -19,5 +15,4 @@
 
 	.page .main {
 		grid-area: pagebody;
-
 	}

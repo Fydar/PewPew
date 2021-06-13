@@ -121,7 +121,6 @@ namespace PewPew.WebApp.Server.Services
 				}
 				else
 				{
-
 					viewMutex.WaitOne();
 					var procedures = commandProcessor.HandleGameTick().ToList();
 					ApplyViewProcedures(procedures, null);

@@ -11,7 +11,9 @@ namespace PewPew.WebApp.Server.Services
 		private readonly List<GameClientConnection> connections;
 
 		public event Action<GameClientConnection>? OnConnect;
+
 		public event Action<GameClientConnection>? OnDisconnect;
+
 		public event Action<GameClientConnection, WebSocketBinaryMessageEvent>? OnMessageRecieved;
 
 		public IReadOnlyList<GameClientConnection> Connections => connections;

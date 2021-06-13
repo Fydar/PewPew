@@ -106,10 +106,6 @@ namespace PewPew.WebApp.Server.Services
 						connection.CommandProcessor = lobby;
 						connection.CommandProcessor.AddPlayer(connection);
 					}
-					else
-					{
-
-					}
 					break;
 				}
 			}
