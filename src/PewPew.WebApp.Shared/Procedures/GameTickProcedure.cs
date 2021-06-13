@@ -22,7 +22,6 @@ namespace PewPew.WebApp.Shared.Procedures
 				projectile.LifetimeRemaining--;
 			}
 
-
 			var removeKeys = new List<LocalId>();
 			foreach (var beamKvp in view.Lobby.World.Beams)
 			{
@@ -39,7 +38,6 @@ namespace PewPew.WebApp.Shared.Procedures
 			{
 				view.Lobby.World.Beams.Remove(removeKey);
 			}
-
 
 			foreach (var shipKvp in view.Lobby.World.Ships)
 			{

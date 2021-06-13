@@ -42,9 +42,17 @@ namespace PewPew.WebApp.Shared.View
 			}
 		}
 
-		public Vector2(float x, float y) { this.x = x; this.y = y; }
+		public Vector2(float x, float y)
+		{
+			this.x = x;
+			this.y = y;
+		}
 
-		public void Set(float newX, float newY) { x = newX; y = newY; }
+		public void Set(float newX, float newY)
+		{
+			x = newX;
+			y = newY;
+		}
 
 		public static Vector2 Lerp(Vector2 a, Vector2 b, float time)
 		{
@@ -81,9 +89,16 @@ namespace PewPew.WebApp.Shared.View
 				current.y + toVectorY / dist * maxDistanceDelta);
 		}
 
-		public static Vector2 Scale(Vector2 a, Vector2 b) { return new Vector2(a.x * b.x, a.y * b.y); }
+		public static Vector2 Scale(Vector2 a, Vector2 b)
+		{
+			return new Vector2(a.x * b.x, a.y * b.y);
+		}
 
-		public void Scale(Vector2 scale) { x *= scale.x; y *= scale.y; }
+		public void Scale(Vector2 scale)
+		{
+			x *= scale.x;
+			y *= scale.y;
+		}
 
 		public void Normalize()
 		{
@@ -119,7 +134,10 @@ namespace PewPew.WebApp.Shared.View
 			return new Vector2(-inDirection.y, inDirection.x);
 		}
 
-		public static float Dot(Vector2 lhs, Vector2 rhs) { return lhs.x * rhs.x + lhs.y * rhs.y; }
+		public static float Dot(Vector2 lhs, Vector2 rhs)
+		{
+			return lhs.x * rhs.x + lhs.y * rhs.y;
+		}
 
 		public static float Angle(Vector2 from, Vector2 to)
 		{
@@ -148,24 +166,54 @@ namespace PewPew.WebApp.Shared.View
 			return (float)Math.Sqrt(diff_x * diff_x + diff_y * diff_y);
 		}
 
-		public static Vector2 Min(Vector2 lhs, Vector2 rhs) { return new Vector2(Math.Min(lhs.x, rhs.x), Math.Min(lhs.y, rhs.y)); }
+		public static Vector2 Min(Vector2 lhs, Vector2 rhs)
+		{
+			return new Vector2(Math.Min(lhs.x, rhs.x), Math.Min(lhs.y, rhs.y));
+		}
 
-		public static Vector2 Max(Vector2 lhs, Vector2 rhs) { return new Vector2(Math.Max(lhs.x, rhs.x), Math.Max(lhs.y, rhs.y)); }
+		public static Vector2 Max(Vector2 lhs, Vector2 rhs)
+		{
+			return new Vector2(Math.Max(lhs.x, rhs.x), Math.Max(lhs.y, rhs.y));
+		}
 
-		public static Vector2 operator +(Vector2 a, Vector2 b) { return new Vector2(a.x + b.x, a.y + b.y); }
+		public static Vector2 operator +(Vector2 a, Vector2 b)
+		{
+			return new Vector2(a.x + b.x, a.y + b.y);
+		}
 
-		public static Vector2 operator -(Vector2 a, Vector2 b) { return new Vector2(a.x - b.x, a.y - b.y); }
+		public static Vector2 operator -(Vector2 a, Vector2 b)
+		{
+			return new Vector2(a.x - b.x, a.y - b.y);
+		}
 
-		public static Vector2 operator *(Vector2 a, Vector2 b) { return new Vector2(a.x * b.x, a.y * b.y); }
+		public static Vector2 operator *(Vector2 a, Vector2 b)
+		{
+			return new Vector2(a.x * b.x, a.y * b.y);
+		}
 
-		public static Vector2 operator /(Vector2 a, Vector2 b) { return new Vector2(a.x / b.x, a.y / b.y); }
+		public static Vector2 operator /(Vector2 a, Vector2 b)
+		{
+			return new Vector2(a.x / b.x, a.y / b.y);
+		}
 
-		public static Vector2 operator -(Vector2 a) { return new Vector2(-a.x, -a.y); }
+		public static Vector2 operator -(Vector2 a)
+		{
+			return new Vector2(-a.x, -a.y);
+		}
 
-		public static Vector2 operator *(Vector2 a, float d) { return new Vector2(a.x * d, a.y * d); }
+		public static Vector2 operator *(Vector2 a, float d)
+		{
+			return new Vector2(a.x * d, a.y * d);
+		}
 
-		public static Vector2 operator *(float d, Vector2 a) { return new Vector2(a.x * d, a.y * d); }
+		public static Vector2 operator *(float d, Vector2 a)
+		{
+			return new Vector2(a.x * d, a.y * d);
+		}
 
-		public static Vector2 operator /(Vector2 a, float d) { return new Vector2(a.x / d, a.y / d); }
+		public static Vector2 operator /(Vector2 a, float d)
+		{
+			return new Vector2(a.x / d, a.y / d);
+		}
 	}
 }

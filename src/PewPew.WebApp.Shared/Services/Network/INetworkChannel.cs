@@ -7,7 +7,9 @@ namespace PewPew.WebApp.Shared.Services.Network
 	public interface INetworkChannel
 	{
 		Task CloseAsync(CancellationToken cancellationToken = default);
+
 		IAsyncEnumerable<IWebSocketEvent> ListenAsync(CancellationToken cancellationToken);
+
 		Task SendAsync(byte[] message, CancellationToken cancellationToken = default);
 	}
 }

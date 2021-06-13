@@ -1,50 +1,47 @@
-
-
 body {
 }
 
 .list-unstyled .media {
-  margin-bottom: 16px;
+	margin-bottom: 16px;
 }
 
-
 .input-group {
-  margin-bottom: 8px;
+	margin-bottom: 8px;
 }
 
 .ship-preview {
-  border-radius: 16px;
-  width: 128px;
-  height: 128px;
-  background-color: #121212;
-  border: 2px #808080 solid;
-  padding: 16px;
+	border-radius: 16px;
+	width: 128px;
+	height: 128px;
+	background-color: #121212;
+	border: 2px #808080 solid;
+	padding: 16px;
 }
 
-  .ship-preview .ship-scout {
-    width: 100%;
-    height: 100%;
-    background-image: url('../img/scout-ship.png');
-    background-size: 100% 100%;
-  }
+	.ship-preview .ship-scout {
+		width: 100%;
+		height: 100%;
+		background-image: url('../img/scout-ship.png');
+		background-size: 100% 100%;
+	}
 
-  .ship-preview .ship-gunship {
-    width: 100%;
-    height: 100%;
-    background-image: url('../img/starfighter.png');
-    background-size: 100% 100%;
-  }
+	.ship-preview .ship-gunship {
+		width: 100%;
+		height: 100%;
+		background-image: url('../img/starfighter.png');
+		background-size: 100% 100%;
+	}
 
-  .ship-preview .ship-capital {
-    width: 100%;
-    height: 100%;
-    background-image: url('../img/spaceship.png');
-    background-size: 100% 100%;
-  }
+	.ship-preview .ship-capital {
+		width: 100%;
+		height: 100%;
+		background-image: url('../img/spaceship.png');
+		background-size: 100% 100%;
+	}
 
-  .ship-preview .ship-battleship {
-    width: 100%;
-    height: 100%;
-    background-image: url('../img/interceptor-ship.png');
-    background-size: 100% 100%;
-  }
+	.ship-preview .ship-battleship {
+		width: 100%;
+		height: 100%;
+		background-image: url('../img/interceptor-ship.png');
+		background-size: 100% 100%;
+	}

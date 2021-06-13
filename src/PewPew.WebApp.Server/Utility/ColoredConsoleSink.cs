@@ -25,8 +25,8 @@ namespace PewPew.WebApp.Server.Utility
 		private readonly JsonValueFormatter valueFormatter;
 
 		/// <summary>
-		/// Construct a <see cref="CompactJsonFormatter"/>, optionally supplying a formatter for
-		/// <see cref="LogEventPropertyValue"/>s on the event.
+		/// Construct a <see cref="ColoredConsoleSink"/>, optionally supplying a formatter for
+		/// <see cref="LogEventPropertyValue"/> on the event.
 		/// </summary>
 		/// <param name="valueFormatter">A value formatter, or null.</param>
 		public ColoredConsoleSink(JsonValueFormatter? valueFormatter = null)
@@ -153,7 +153,6 @@ namespace PewPew.WebApp.Server.Utility
 						Console.ForegroundColor = ConsoleColor.Gray;
 						valueFormatter.Format(property.Value, output);
 					}
-
 				}
 				Console.ResetColor();
 				output.Write("\n\n");

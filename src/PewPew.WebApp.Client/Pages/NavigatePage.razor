@@ -73,14 +73,12 @@
 					<div class="player @ship.ShipType team-@(owner?.TeamId ?? -1) @(ship.IsDestroyed ? "destroyed" : "")" style="top: 0; left: 0; transform: translate(@(ship.Position.x)px, @(ship.Position.y)px)">
 
 						<div class="player-ship" style="transform: rotate(@(ship.Rotation + 180.0f)deg);">
-
 						</div>
 
 						@if (!ship.IsDestroyed)
 						{
 							<div class="bar">
-								<div class="fill" style="width: @((int)(ship.HealthPercentage * 100))%" >
-
+								<div class="fill" style="width: @((int)(ship.HealthPercentage * 100))%">
 								</div>
 							</div>
 							@if (owner != null)
@@ -99,7 +97,6 @@
 								<div class="range-indicator" style="width: @(range * 2)px; height: @(range * 2)px;"></div>
 							}
 						}
-
 					</div>
 				}
 			}
@@ -123,6 +120,5 @@
 
 			<div style="@(canBarrage ? "opacity: 1" : "opacity: 0.3")" class="game-btn game-btn-navigate" @onclick="AbilityButtonClicked">Barrage</div>
 		}
-
 	</div>
 </div>

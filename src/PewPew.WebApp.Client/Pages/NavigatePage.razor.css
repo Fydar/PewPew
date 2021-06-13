@@ -1,10 +1,6 @@
-
-
-
 body {
 	color: #eee;
 }
-
 
 .page-insert {
 	margin: 0;
@@ -34,9 +30,9 @@ body {
 	position: absolute;
 }
 
-.grid * {
-	pointer-events: none;
-}
+	.grid * {
+		pointer-events: none;
+	}
 
 .projectile {
 	position: absolute;
@@ -81,10 +77,10 @@ body {
 		opacity: 0.5;
 	}
 
-		.player.capital .player-ship {
-			background-image: url('../img/spaceship.png');
-			background-size: 100% 100%;
-		}
+	.player.capital .player-ship {
+		background-image: url('../img/spaceship.png');
+		background-size: 100% 100%;
+	}
 
 	.player.capital {
 		width: 150px;
@@ -154,9 +150,9 @@ body {
 		margin-right: -32px;
 	}
 
-	.player .bar .fill {
-		height: 100%;
-	}
+		.player .bar .fill {
+			height: 100%;
+		}
 
 	.player.team-0 .bar .fill {
 		background-color: #337ab7;
@@ -170,9 +166,7 @@ body {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-
 	transform: translate(-50%, -50%);
-
 	border-radius: 50%;
 	border: 2px solid #b12e2e;
 }
