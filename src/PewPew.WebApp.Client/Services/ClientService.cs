@@ -17,11 +17,11 @@ namespace PewPew.WebApp.Client.Services
 	{
 		private readonly ILogger logger;
 		private readonly JsonSerializer serializer;
-		private WebSocketChannel webSocketChannel;
+		private WebSocketChannel? webSocketChannel;
 
-		public ClientNetworkedView View { get; private set; }
+		public ClientNetworkedView? View { get; private set; }
 
-		public event Action<NetworkedViewProcedure> OnProcedureApplied;
+		public event Action<NetworkedViewProcedure?>? OnProcedureApplied;
 
 		public ClientService(ILogger<ClientService> logger, NavigationManager navigationManager)
 		{
@@ -38,6 +38,11 @@ namespace PewPew.WebApp.Client.Services
 
 		public Task SendCommandAsync(ClientCommand command)
 		{
+			if (webSocketChannel == null)
+			{
+				throw new InvalidOperationException($"Cannot perform '{nameof(SendCommandAsync)}' without first calling '{nameof(RunAsync)}'.");
+			}
+
 			byte[] data = SerializeCommand(command);
 
 			return webSocketChannel.SendAsync(data);
@@ -70,6 +75,10 @@ namespace PewPew.WebApp.Client.Services
 					{
 						try
 						{
+							if (message.Body.Array == null)
+							{
+								throw new InvalidOperationException("Failed to get inner array of websocket message.");
+							}
 							var stream = new MemoryStream(message.Body.Array, message.Body.Offset, message.Body.Count, false, false);
 							var procedure = DeserializeProcedure(stream);
 							procedure.ApplyToView(View);
@@ -116,6 +125,12 @@ namespace PewPew.WebApp.Client.Services
 			using var jr = new JsonTextReader(sr);
 
 			var deserialized = serializer.Deserialize<PackagedModel<NetworkedViewProcedure>>(jr);
+
+			if (deserialized == null)
+			{
+				throw new InvalidOperationException($"Failed to deserialize {nameof(PackagedModel<NetworkedViewProcedure>)}.");
+			}
+
 			return deserialized.Deserialize();
 		}
 	}

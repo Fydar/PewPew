@@ -49,7 +49,7 @@ namespace PewPew.WebApp.Shared.Services.Network
 
 				DateTimeOffset? startTime = null;
 
-				WebSocketReceiveResult result = null;
+				WebSocketReceiveResult? result = null;
 				do
 				{
 					if (cancellationToken.IsCancellationRequested)
@@ -68,7 +68,7 @@ namespace PewPew.WebApp.Shared.Services.Network
 						yield break;
 					}
 
-					Exception innerException = null;
+					Exception? innerException = null;
 
 					try
 					{
@@ -82,20 +82,20 @@ namespace PewPew.WebApp.Shared.Services.Network
 
 					if (innerException != null)
 					{
-						yield return new WebSocketExceptionDisconnectEvent()
+						yield return new WebSocketExceptionDisconnectEvent(innerException)
 						{
 							StartTime = startTime.Value,
 							EndTime = DateTimeOffset.UtcNow,
 
-							CloseStatus = result?.CloseStatus ?? WebSocketCloseStatus.Empty,
-							InnerException = innerException
+							CloseStatus = result?.CloseStatus ?? WebSocketCloseStatus.Empty
 						};
 
 						ArrayPool<byte>.Shared.Return(rentedBuffer);
 						yield break;
 					}
+					result = result ?? throw new InvalidOperationException("Cannot read the result value as it is null.");
 
-					if (!result.EndOfMessage)
+					if (result != null && !result.EndOfMessage)
 					{
 						byte[] newBuffer = ArrayPool<byte>.Shared.Rent(rentedBuffer.Length * 2);
 						rentedBuffer.CopyTo(newBuffer, 0);
@@ -107,9 +107,9 @@ namespace PewPew.WebApp.Shared.Services.Network
 						rentedBuffer = newBuffer;
 					}
 				}
-				while (!result.EndOfMessage);
+				while (result != null && !result.EndOfMessage);
 
-				if (result.CloseStatus.HasValue)
+				if (result?.CloseStatus.HasValue ?? false)
 				{
 					ArrayPool<byte>.Shared.Return(rentedBuffer);
 
@@ -117,22 +117,24 @@ namespace PewPew.WebApp.Shared.Services.Network
 					{
 						StartTime = startTime ?? DateTimeOffset.UtcNow,
 						EndTime = DateTimeOffset.UtcNow,
-						CloseStatus = result.CloseStatus.Value,
+						CloseStatus = result.CloseStatus ?? WebSocketCloseStatus.Empty,
 					};
 					yield break;
 				}
 				else
 				{
-					var wholeBuffer = new ArraySegment<byte>(rentedBuffer, 0, result.Count);
-
-					yield return new WebSocketBinaryMessageEvent()
+					if (result != null)
 					{
-						StartTime = startTime ?? DateTimeOffset.UtcNow,
-						EndTime = DateTimeOffset.UtcNow,
+						var wholeBuffer = new ArraySegment<byte>(rentedBuffer, 0, result.Count);
 
-						Body = wholeBuffer,
-						rentedArray = rentedBuffer
-					};
+						yield return new WebSocketBinaryMessageEvent(rentedBuffer)
+						{
+							StartTime = startTime ?? DateTimeOffset.UtcNow,
+							EndTime = DateTimeOffset.UtcNow,
+
+							Body = wholeBuffer
+						};
+					}
 				}
 			}
 		}

@@ -9,11 +9,11 @@ namespace PewPew.WebApp.Server.Services
 	public class GameClientConnection
 	{
 		public LocalId Identifier { get; }
-		public ICommandProcessor CommandProcessor { get; set; }
+		public ICommandProcessor? CommandProcessor { get; set; }
 
 		private readonly INetworkChannel channel;
 
-		public event Action<byte[]> OnBeforeMessageSent;
+		public event Action<byte[]>? OnBeforeMessageSent;
 
 		public GameClientConnection(LocalId identifier, INetworkChannel channel)
 		{

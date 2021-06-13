@@ -6,7 +6,10 @@ namespace PewPew.WebApp.Shared.Procedures
 	{
 		public override void ApplyToView(NetworkedView view)
 		{
-			view.Lobby.World = null;
+			if (view.Lobby != null)
+			{
+				view.Lobby.World = null;
+			}
 		}
 	}
 }

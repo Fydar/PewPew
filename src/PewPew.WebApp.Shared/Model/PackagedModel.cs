@@ -60,19 +60,23 @@ namespace PewPew.WebApp.Shared.Model
 		public string Type { get; set; }
 		public JObject Data { get; set; }
 
+		public PackagedModel(string type, JObject data)
+		{
+			Type = type;
+			Data = data;
+		}
+
 		public TModel Deserialize()
 		{
 			var type = typeLookup[Type];
-			return (TModel)Data.ToObject(type);
+			return Data.ToObject(type) is TModel result
+				? result
+				: throw new InvalidOperationException($"Failed to deserialize {Data} to type '{Type}'");
 		}
 
 		public static PackagedModel<TModel> Serialize(TModel model)
 		{
-			return new PackagedModel<TModel>()
-			{
-				Type = model.GetType().Name,
-				Data = JObject.FromObject(model)
-			};
+			return new PackagedModel<TModel>(model.GetType().Name, JObject.FromObject(model));
 		}
 	}
 }

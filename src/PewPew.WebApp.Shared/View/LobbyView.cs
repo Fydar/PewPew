@@ -9,7 +9,7 @@ namespace PewPew.WebApp.Shared.View
 	public class LobbyView
 	{
 		public string LobbyKey { get; set; } = string.Empty;
-		public GameplayWorld World { get; set; }
+		public GameplayWorld? World { get; set; }
 		public LobbyChat Chat { get; set; }
 		public Dictionary<LocalId, LobbyPublicPlayerProfile> Players { get; set; }
 

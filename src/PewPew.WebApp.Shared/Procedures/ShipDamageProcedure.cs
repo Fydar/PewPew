@@ -1,5 +1,6 @@
 ﻿using PewPew.WebApp.Shared.Model;
 using PewPew.WebApp.Shared.View;
+using System;
 
 namespace PewPew.WebApp.Shared.Procedures
 {
@@ -11,6 +12,11 @@ namespace PewPew.WebApp.Shared.Procedures
 
 		public override void ApplyToView(NetworkedView view)
 		{
+			if (view.Lobby?.World == null)
+			{
+				throw new InvalidOperationException("Cannot apply procedure to networked view as it doesn't have a valid world.");
+			}
+
 			if (!(view.Lobby.World?.Ships.ContainsKey(Target) ?? false))
 			{
 				return;
@@ -27,7 +33,7 @@ namespace PewPew.WebApp.Shared.Procedures
 
 			ship.Health -= Damage;
 
-			if (clientNetworkedView != null && Source == clientNetworkedView.Client.ClientId)
+			if (clientNetworkedView != null && Source == clientNetworkedView?.Client?.ClientId)
 			{
 				var targetPlayer = view.Lobby.Players[Target];
 
@@ -38,7 +44,7 @@ namespace PewPew.WebApp.Shared.Procedures
 			{
 				var targetPlayer = view.Lobby.Players[Target];
 
-				if (clientNetworkedView != null && Source == clientNetworkedView.Client.ClientId)
+				if (clientNetworkedView != null && Source == clientNetworkedView?.Client?.ClientId)
 				{
 					view.Lobby.World.BattleLog.Add($"You destroyed {targetPlayer.DisplayName}!");
 				}

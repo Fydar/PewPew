@@ -21,7 +21,7 @@
 
 		<div class="grid" id="zoomcanvasid" @onclick="MapOnClick" @onmouseup="MapOnMouseUp" oncontextmenu="return false;">
 
-			@if (Client.View?.Lobby?.World?.Projectiles != null)
+			@if (Client?.View?.Lobby?.World?.Projectiles != null)
 			{
 				@foreach (var projectileKvp in Client.View.Lobby.World.Projectiles)
 				{
@@ -32,7 +32,7 @@
 				}
 			}
 
-			@if (Client.View?.Lobby?.World?.Beams != null)
+			@if (Client?.View?.Lobby?.World?.Beams != null)
 			{
 				<svg class="beams">
 					@foreach (var beamKvp in Client.View.Lobby.World.Beams)
@@ -61,15 +61,14 @@
 				</svg>
 			}
 
-			@if (Client.View?.Lobby?.World?.Ships != null)
+			@if (Client?.View?.Lobby?.World?.Ships != null)
 			{
 				@foreach (var shipKvp in Client.View.Lobby.World.Ships)
 				{
 					var ship = shipKvp.Value;
 
-					PewPew.WebApp.Shared.View.LobbyPublicPlayerProfile owner = null;
-
-					Client.View.Lobby?.Players?.TryGetValue(shipKvp.Key, out owner);
+					PewPew.WebApp.Shared.View.LobbyPublicPlayerProfile? owner = null;
+					Client.View?.Lobby.Players?.TryGetValue(shipKvp.Key, out owner);
 
 					<div class="player @ship.ShipType team-@(owner?.TeamId ?? -1) @(ship.IsDestroyed ? "destroyed" : "")" style="top: 0; left: 0; transform: translate(@(ship.Position.x)px, @(ship.Position.y)px)">
 
@@ -107,8 +106,11 @@
 		</div>
 
 		@{
-			PewPew.WebApp.Shared.View.GameplayShip playerShip = null;
-			Client.View?.Lobby?.World?.Ships.TryGetValue(Client.View.Client.ClientId, out playerShip);
+			PewPew.WebApp.Shared.View.GameplayShip? playerShip = null;
+			if (Client?.View?.Client != null)
+			{
+				Client.View?.Lobby?.World?.Ships.TryGetValue(Client.View.Client.ClientId, out playerShip);
+			}
 		}
 
 		@if (playerShip != null && playerShip.HasBarrage)

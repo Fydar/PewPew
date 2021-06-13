@@ -4,6 +4,11 @@ namespace PewPew.WebApp.Shared.Services.Network
 {
 	public class WebSocketExceptionDisconnectEvent : WebSocketDisconnectEvent
 	{
-		public Exception InnerException { get; internal set; }
+		public Exception InnerException { get; }
+
+		public WebSocketExceptionDisconnectEvent(Exception innerException)
+		{
+			InnerException = innerException;
+		}
 	}
 }

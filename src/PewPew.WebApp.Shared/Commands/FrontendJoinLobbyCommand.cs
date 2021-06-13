@@ -2,6 +2,6 @@
 {
 	public class FrontendJoinLobbyCommand : ClientCommand
 	{
-		public string LobbyKey { get; set; }
+		public string LobbyKey { get; set; } = string.Empty;
 	}
 }

@@ -18,7 +18,6 @@ namespace PewPew.WebApp.Server.Controllers
 	{
 		private readonly ILogger logger;
 		private readonly ConnectionManagerService connectionManagerService;
-		public ServerFrontend serverFrontend;
 
 		public GameController(
 			ILogger<GameController> logger,
@@ -45,10 +44,7 @@ namespace PewPew.WebApp.Server.Controllers
 			using var currentSocket = await context.WebSockets.AcceptWebSocketAsync();
 
 			var socketChannel = WebSocketChannel.ContinueFrom(currentSocket);
-			var clientConnection = new GameClientConnection(LocalId.NewId(), socketChannel)
-			{
-				CommandProcessor = serverFrontend
-			};
+			var clientConnection = new GameClientConnection(LocalId.NewId(), socketChannel);
 
 			clientConnection.OnBeforeMessageSent += OnBeforeMessageHandler;
 			connectionManagerService.Connections.AcceptNewClientConnection(clientConnection);
@@ -102,6 +98,10 @@ namespace PewPew.WebApp.Server.Controllers
 
 		private static string LogStream(ArraySegment<byte> body)
 		{
+			if (body.Array == null)
+			{
+				return string.Empty;
+			}
 			return Encoding.UTF8.GetString(body.Array, body.Offset, body.Count);
 		}
 	}

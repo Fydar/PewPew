@@ -130,7 +130,7 @@ namespace PewPew.WebApp.Server.Services
 			}
 		}
 
-		private void ApplyViewProcedures(IReadOnlyList<ScopedNetworkedViewProcedure> scopedProcedures, GameClientConnection sender = null)
+		private void ApplyViewProcedures(IReadOnlyList<ScopedNetworkedViewProcedure> scopedProcedures, GameClientConnection? sender = null)
 		{
 			for (int p = 0; p < scopedProcedures.Count; p++)
 			{

@@ -11,7 +11,7 @@ namespace PewPew.WebApp.Shared.View
 		/// <summary>
 		/// The lobby that the player is currently connected.
 		/// </summary>
-		public LobbyView Lobby { get; set; }
+		public LobbyView? Lobby { get; set; }
 	}
 
 	/// <summary>
@@ -22,9 +22,9 @@ namespace PewPew.WebApp.Shared.View
 		/// <summary>
 		/// Client-specific functionality as-informed to this view by the server.
 		/// </summary>
-		public ClientSpecific Client { get; set; }
+		public ClientSpecific? Client { get; set; }
 
-		public List<LobbyStatus> Lobbies { get; set; }
+		public List<LobbyStatus>? Lobbies { get; set; }
 	}
 
 	/// <summary>

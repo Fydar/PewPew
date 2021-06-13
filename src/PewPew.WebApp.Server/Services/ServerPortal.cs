@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PewPew.WebApp.Server.Services
 {
@@ -16,7 +17,7 @@ namespace PewPew.WebApp.Server.Services
 			Frontend = new ServerFrontend(this);
 		}
 
-		public bool TryGetLobby(string lobbyKey, out ServerLobby lobby)
+		public bool TryGetLobby(string lobbyKey, [NotNullWhen(true)] out ServerLobby? lobby)
 		{
 			return lobbies.TryGetValue(lobbyKey, out lobby);
 		}
